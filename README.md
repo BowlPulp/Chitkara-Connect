@@ -54,17 +54,18 @@ The main purpose of this project is to enable Chitkara University students to lo
 3. Start the backend server:
 
     ```bash
-    npm start
+    cd server
+    node --watch index.js
     ```
 
 4. Navigate to the frontend (React) project directory and start it:
 
     ```bash
     cd client
-    npm start
+    npm run dev 
     ```
 
-The application should now be running locally at `http://localhost:3000`.
+The application should now be running locally at `http://localhost:5173`.
 
 ## Contributing
 
