@@ -41,7 +41,7 @@ The main purpose of this project is to enable Chitkara University students to lo
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/chitkara-connect.git
+    git clone https://github.com/JatinJaglan347/Chitkara-Connect.git
     cd chitkara-connect
     ```
 
