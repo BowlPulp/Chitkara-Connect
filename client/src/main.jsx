@@ -14,6 +14,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import StudentLayout from './StudentLayout.jsx';
 import TeacherLayout from './TeacherLayout.jsx';
 import Temporary from './Temporary.jsx';
+import SupportPage from './page/login/SupportPage.jsx';
 
 const router = createBrowserRouter([
   // Default Login Route
@@ -24,13 +25,13 @@ const router = createBrowserRouter([
 
   // Temporary route (this can be changed according to your requirement)
   {
-    path: '/temp',
-    element: <Temporary />
+    path: '/support',
+    element: <SupportPage />
   },
 
   // Student Routes (Dynamic ID and RollNo in the URL)
   {
-    path: '/student/:id/:rollNo', // Correct dynamic path
+    path: '/student/', // Correct dynamic path
     element: <StudentLayout />,
     children: [
       {
@@ -44,13 +45,17 @@ const router = createBrowserRouter([
       {
         path: 'queries',
         element: <StudentQueries />
-      }
+      },
+      {
+        path: 'help',
+        element: <SupportPage />
+      },
     ]
   },
 
   // Teacher Routes (Dynamic ID and TeacherId in the URL)
   {
-    path: '/teacher/:id/:teacherId', // Correct dynamic path
+    path: '/teacher/', // Correct dynamic path
     element: <TeacherLayout />,
     children: [
       {
@@ -60,7 +65,11 @@ const router = createBrowserRouter([
       {
         path: 'notice/create',
         element: <TeacherNoticeCreate />
-      }
+      },
+      {
+        path: 'help',
+        element: <SupportPage />
+      },
     ]
   }
 ]);

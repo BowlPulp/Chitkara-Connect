@@ -11,30 +11,32 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(""); // Reset error message before attempting login
-    
+
     try {
       const response = await fetch("http://localhost:3000/api/login", { // Ensure the port matches your server setup
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: rollNo, password }), // Sending rollNo as userId
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.message || "Login failed");
         return;
       }
-  
+
       const data = await response.json();
-      localStorage.setItem("token", data.token); // Store token in local storage
+
+      // Store token in cookies (httpOnly cookie will be set by the server)
+      document.cookie = `authToken=${data.token}; path=/; max-age=3600`; // Cookie expires in 1 hour
 
       // Now redirect based on the role (student or teacher)
       if (data.role === "student") {
         // Redirect to student dashboard
-        navigate(`/student/${data.userId}${data.RollNo}/home`);
+        navigate(`/student/home`);
       } else if (data.role === "teacher") {
         // Redirect to teacher dashboard
-        navigate(`/teacher/${data.userId}${data.teacherId}/home`);
+        navigate(`/teacher/home`);
       } else {
         setError("User role not found.");
       }
@@ -95,7 +97,7 @@ const LoginPage = () => {
 
         <div className="text-sm text-center text-gray-500">
           <p>Having trouble logging in?</p>
-          <a href="#" className="text-red-500 hover:underline">
+          <a href="/support" className="text-red-500 hover:underline">
             Contact support
           </a>
         </div>
