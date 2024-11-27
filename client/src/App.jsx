@@ -3,7 +3,6 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import LoginPage from './page/login/LoginPage'
-import StudentNavBar from './page/student/studentNavBar/studentNavBar'
 import StudentHome from './page/student/StudentHome/StudentHome'
 import StudentGatepass from './page/student/StudentGatepass/StudentGatepass'
 import StudentQueries from './page/student/StudentQueries/StudentQueries'
@@ -11,13 +10,14 @@ import TeacherNavBar from './page/teacher/TeacherNavBar/TeacherNavBar'
 import TeacherHome from './page/teacher/TeacherHome/TeacherHome'
 import TeacherNoticeCreate from './page/teacher/TeacherHome/TeacherNoticeCreate'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-
+import StudentNavBar from './page/student/StudentNavBar/StudentNavBar'
+import Footer from './page/footer/Footer'
 
 
 const App = () => {
   return (
     <Router>
+    
       <Routes>
         {/* Default route to login */}
         <Route path="/" element={<LoginPage />} />
@@ -35,6 +35,7 @@ const App = () => {
           <Route path="notice/create" element={<TeacherNoticeCreate />} />
         </Route>
       </Routes>
+      <Footer/>
     </Router>
   );
 };

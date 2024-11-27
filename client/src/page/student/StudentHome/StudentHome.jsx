@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ChatBot from "../../../chatbot/ChatBot";
 
 const StudentHome = () => {
   const [activeTab, setActiveTab] = useState("mentorNotice");
@@ -128,6 +129,7 @@ const StudentHome = () => {
 
       {/* Content Area */}
       <div className="p-8">{renderContent()}</div>
+    
     </div>
   );
 };

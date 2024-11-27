@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import Chitkaralogo from "/chitkaraLogo.jpeg";
 import profile from "/profile.png";
+import ChatBot from "../../../chatbot/ChatBot";
 
 const StudentNavBar = () => {
   const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -57,7 +58,7 @@ const StudentNavBar = () => {
           <NavLink to="/student/attendance" className={({ isActive }) => (isActive ? "text-[#EB1C24]" : "hover:text-[#EB1C24] text-gray-400")}>Attendance</NavLink>
           <NavLink to="/student/gatepass" className={({ isActive }) => (isActive ? "text-[#EB1C24]" : "hover:text-[#EB1C24] text-gray-400")}>Gatepass</NavLink>
           <NavLink to="/student/queries" className={({ isActive }) => (isActive ? "text-[#EB1C24]" : "hover:text-[#EB1C24] text-gray-400")}>Queries</NavLink>
-          <NavLink to="/student/contact-mentor" className={({ isActive }) => (isActive ? "text-[#EB1C24]" : "hover:text-[#EB1C24] text-gray-400")}>Contact Mentor</NavLink>
+          <NavLink to="/student/contact-teachers" className={({ isActive }) => (isActive ? "text-[#EB1C24]" : "hover:text-[#EB1C24] text-gray-400")}>Contact Teachers</NavLink>
           <NavLink to="/student/help" className={({ isActive }) => (isActive ? "text-[#EB1C24]" : "hover:text-[#EB1C24] text-gray-400")}>Help</NavLink>
         </div>
 
@@ -102,10 +103,11 @@ const StudentNavBar = () => {
           <NavLink to="/student/attendance" className="hover:text-[#EB1C24]">Attendance</NavLink>
           <NavLink to="/student/gatepass" className="hover:text-[#EB1C24]">Gatepass</NavLink>
           <NavLink to="/student/queries" className="hover:text-[#EB1C24]">Queries</NavLink>
-          <NavLink to="/student/contact-mentor" className="hover:text-[#EB1C24]">Contact Mentor</NavLink>
+          <NavLink to="/student/contact-teachers" className="hover:text-[#EB1C24]">Contact Teachers</NavLink>
           <NavLink to="/student/help" className="hover:text-[#EB1C24]">Help</NavLink>
         </div>
       )}
+    <ChatBot/>
     </nav>
   );
 };

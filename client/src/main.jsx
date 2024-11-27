@@ -2,7 +2,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import LoginPage from './page/login/LoginPage';
-import StudentNavBar from './page/student/studentNavBar/studentNavBar';
 import StudentHome from './page/student/StudentHome/StudentHome';
 import StudentGatepass from './page/student/StudentGatepass/StudentGatepass';
 import StudentQueries from './page/student/StudentQueries/StudentQueries';
@@ -15,6 +14,8 @@ import StudentLayout from './StudentLayout.jsx';
 import TeacherLayout from './TeacherLayout.jsx';
 import Temporary from './Temporary.jsx';
 import SupportPage from './page/login/SupportPage.jsx';
+import ManageStudents from './page/teacher/ManageStudents/ManageStudents.jsx';
+import ContactTeachers from './page/student/ContactTeachers/ContactTeachers.jsx';
 
 const router = createBrowserRouter([
   // Default Login Route
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
         path: 'help',
         element: <SupportPage />
       },
+      {
+        path: 'contact-teachers',
+        element: <ContactTeachers />
+      },
     ]
   },
 
@@ -69,6 +74,10 @@ const router = createBrowserRouter([
       {
         path: 'help',
         element: <SupportPage />
+      },
+      {
+        path: 'manage',
+        element: <ManageStudents />
       },
     ]
   }

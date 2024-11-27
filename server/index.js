@@ -244,6 +244,166 @@ app.post('/api/logout', (req, res) => {
   return res.status(200).json({ message: 'Logged out successfully' });
 });
 
+const questions = [
+  {
+    id: 1,
+    question: "What is Chitkara Connect?",
+    answer: "Chitkara Connect is a platform enabling students and teachers to interact and access information like notices, events, attendance, and more."
+  },
+  {
+    id: 2,
+    question: "Who is Chitkara's Chancellor?",
+    answer: "Dr. Ashok Chitkara is the Chancellor of Chitkara University."
+  },
+  {
+    id: 3,
+    question: "Where is Chitkara University located?",
+    answer: "Chitkara University is located on the Chandigarh-Patiala National Highway (NH-07) in Rajpura, Punjab. It is equidistant from major cities like Chandigarh, Mohali, and Patiala."
+  },
+  {
+    id: 4,
+    question: "What programs does Chitkara University offer?",
+    answer: "Chitkara University offers programs in business management, engineering, computer science, nursing, hotel management, architecture, and more."
+  },
+  {
+    id: 5,
+    question: "When was Chitkara University established?",
+    answer: "Chitkara University was established in 2010 under the Chitkara University Act by the Punjab State Legislature."
+  },
+  {
+    id: 6,
+    question: "What makes Chitkara University unique?",
+    answer: "It is known for quality education, ethical practices, strong industry collaborations, and an emphasis on research and innovation."
+  },
+  {
+    id: 7,
+    question: "Does Chitkara University have international collaborations?",
+    answer: "Yes, Chitkara University has partnerships with top international universities for student exchange programs, research collaborations, and dual degree programs."
+  },
+  {
+    id: 8,
+    question: "What extracurricular activities are available at Chitkara University?",
+    answer: "Students can participate in cultural fests, sports events, technical competitions, and social outreach programs organized regularly on campus."
+  },
+  {
+    id: 9,
+    question: "What facilities are available at Chitkara University?",
+    answer: "The campus has modern classrooms, laboratories, a library, hostels, sports complexes, and cafeterias, ensuring a holistic learning environment."
+  },
+  {
+    id: 10,
+    question: "What are the placement statistics for Chitkara University?",
+    answer: "Chitkara University has a high placement record, with top recruiters from industries like IT, hospitality, healthcare, and management visiting the campus annually."
+  },
+  {
+    id: 11,
+    question: "Is Chitkara University accredited?",
+    answer: "Yes, Chitkara University is accredited by NAAC and recognized by the UGC, ensuring high standards of education and infrastructure."
+  },
+  {
+    id: 12,
+    question: "How can students apply for admission to Chitkara University?",
+    answer: "Students can apply through the university's online portal, submitting the required documents and passing eligibility criteria for their chosen program."
+  },
+  {
+    id: 13,
+    question: "What is the student-faculty ratio at Chitkara University?",
+    answer: "Chitkara University maintains a balanced student-faculty ratio to ensure personalized attention and effective learning for students."
+  },
+  {
+    id: 14,
+    question: "Does Chitkara University offer scholarships?",
+    answer: "Yes, the university provides merit-based scholarships to deserving students across various programs."
+  },
+  {
+    id: 15,
+    question: "What research opportunities are available at Chitkara University?",
+    answer: "Chitkara University emphasizes research, offering students and faculty opportunities to work on funded projects, publish papers, and collaborate with industry experts."
+  },
+  {
+    id: 16,
+    question: "What is the eligibility for B.Tech at Chitkara University?",
+    answer: "Applicants must have completed 10+2 with a minimum of 60% marks in Physics, Chemistry, and Mathematics."
+  },
+  {
+    id: 17,
+    question: "What MBA specializations does Chitkara University offer?",
+    answer: "Specializations include Marketing, Finance, HR, Operations, and Business Analytics."
+  },
+  {
+    id: 18,
+    question: "What is the admission process for nursing programs?",
+    answer: "Applicants must have completed 10+2 with Biology as a subject. Admissions are based on merit."
+  },
+  {
+    id: 19,
+    question: "What are the benefits of student exchange programs?",
+    answer: "Student exchange programs provide global exposure, cultural exchange, and opportunities for advanced research and study."
+  },
+  {
+    id: 20,
+    question: "What support services does Chitkara University offer?",
+    answer: "Support services include career counseling, on-campus healthcare, psychological support, and financial aid."
+  },
+  {
+    id: 21,
+    question: "What events are conducted at Chitkara University?",
+    answer: "Events like Udaan, Tech Fest, and sports tournaments are held to enhance the overall student experience."
+  },
+  {
+    id: 22,
+    question: "What is the focus of the Engineering program?",
+    answer: "Chitkara's Engineering program emphasizes innovation, problem-solving skills, and industry-relevant training."
+  },
+  {
+    id: 23,
+    question: "What sustainability initiatives are adopted by Chitkara University?",
+    answer: "The university promotes green energy, waste management, and eco-friendly practices across the campus."
+  },
+  {
+    id: 24,
+    question: "What is the scope of online learning at Chitkara University?",
+    answer: "The university integrates online learning for flexible education and offers industry-relevant certifications."
+  },
+  {
+    id: 25,
+    question: "What are the dining facilities at Chitkara University?",
+    answer: "Chitkara's campus includes multiple food outlets offering diverse cuisines and ensuring hygienic standards."
+  }
+];
+
+app.get('/questions', (req, res) => {
+res.json(questions);
+});
+
+app.get('/api/manage-students', async (req, res) => {
+  try {
+    // Fetch all students from the database
+    const students = await studentsCollection.find({}).toArray();
+
+    // Return the list of students as JSON response
+    res.json(students);
+  } catch (error) {
+    console.error('Error fetching student details:', error);
+    res.status(500).json({ message: 'Error fetching student details' });
+  }
+});
+
+app.get('/api/contact-teachers', async (req, res) => {
+  try {
+    // Fetch all students from the database
+    const teachers = await teachersCollection.find({}).toArray();
+
+    // Return the list of students as JSON response
+    res.json(teachers);
+  } catch (error) {
+    console.error('Error fetching teachers details:', error);
+    res.status(500).json({ message: 'Error fetching teachers details' });
+  }
+});
+
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
