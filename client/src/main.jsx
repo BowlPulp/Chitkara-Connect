@@ -16,6 +16,8 @@ import Temporary from './Temporary.jsx';
 import SupportPage from './page/login/SupportPage.jsx';
 import ManageStudents from './page/teacher/ManageStudents/ManageStudents.jsx';
 import ContactTeachers from './page/student/ContactTeachers/ContactTeachers.jsx';
+import StudentsSyllabus from './page/student/StudentSyllabus/StudentSyllabus.jsx';
+import AddSyllabus from './page/teacher/TeacherSyllabus/AddSyllabus.jsx';
 
 const router = createBrowserRouter([
   // Default Login Route
@@ -55,6 +57,10 @@ const router = createBrowserRouter([
         path: 'contact-teachers',
         element: <ContactTeachers />
       },
+      {
+        path: 'syllabus',
+        element: <StudentsSyllabus />
+      },
     ]
   },
 
@@ -78,6 +84,10 @@ const router = createBrowserRouter([
       {
         path: 'manage',
         element: <ManageStudents />
+      },
+      {
+        path: 'syllabus',
+        element: <AddSyllabus />
       },
     ]
   }

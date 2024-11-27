@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios"; // Import axios for making API requests
 import chitkaraLogo from "../../assets/chitkaraLogo.jpeg"; // Adjust the path as needed
 
 const SupportPage = () => {
@@ -10,23 +11,32 @@ const SupportPage = () => {
     message: "",
   });
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // New state to handle errors
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
-    setSuccessMessage("Thank you for your feedback! We'll get back to you shortly.");
-    setFormData({
-      name: "",
-      email: "",
-      role: "Student",
-      queryType: "Bug Report",
-      message: "",
-    });
+    try {
+      const response = await axios.post("http://localhost:3000/api/support-add", formData);
+      console.log("Response:", response.data);
+      setSuccessMessage("Thank you for your feedback! We'll get back to you shortly.");
+      setErrorMessage(""); // Clear any previous error messages
+      setFormData({
+        name: "",
+        email: "",
+        role: "Student",
+        queryType: "Bug Report",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      setErrorMessage("Failed to submit feedback. Please try again later.");
+      setSuccessMessage(""); // Clear any previous success messages
+    }
   };
 
   return (
@@ -119,6 +129,7 @@ const SupportPage = () => {
           </div>
 
           {successMessage && <p className="text-green-500 text-center">{successMessage}</p>}
+          {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
 
           <button
             type="submit"

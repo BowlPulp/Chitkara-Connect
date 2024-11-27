@@ -24,6 +24,7 @@ let studentsCollection;
 let teachersCollection;
 let adminsCollection;
 let noticesCollection;
+let gatepassCollection
 
 async function run() {
   try {
@@ -33,6 +34,7 @@ async function run() {
     teachersCollection = db.collection('teachers');
     adminsCollection = db.collection('admins');
     noticesCollection = db.collection('notices');  // Add notices collection
+    gatepassCollection = db.collection('gatepass')
     console.log("Connected to MongoDB and ready to handle requests!");
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
@@ -399,6 +401,117 @@ app.get('/api/contact-teachers', async (req, res) => {
   } catch (error) {
     console.error('Error fetching teachers details:', error);
     res.status(500).json({ message: 'Error fetching teachers details' });
+  }
+});
+
+
+// POST route to submit a gate pass
+app.post('/api/submit-gatepass', async (req, res) => {
+  // Extract gate pass details from the request body
+  const { name, rollNo, email, contact, date, time, reason, approvedStatus } = req.body;
+
+  // Prepare the gate pass document to be inserted into the database
+  const gatepassData = {
+    name,
+    rollNo,
+    email,
+    contact,
+    date,
+    time,
+    reason,
+    approvedStatus ,
+    createdAt: new Date(),
+  };
+
+  try {
+    // Insert the gate pass data into the 'gatepass' collection in MongoDB
+    const result = await gatepassCollection.insertOne(gatepassData);
+
+    // Return a response with the success message and the inserted gate pass ID
+    res.status(201).json({ message: 'Gate pass submitted successfully', gatepassId: result.insertedId });
+  } catch (error) {
+    // Log the error and return a 500 status if there was an issue inserting the gate pass
+    console.error('Error submitting gate pass:', error);
+    res.status(500).json({ message: 'Error submitting gate pass' });
+  }
+});
+
+app.post('/api/syllabus-add', async (req, res) => {
+  const { courseName, topics, semester } = req.body;
+
+  // Ensure topics is an array, even if a string is provided
+  const topicList = Array.isArray(topics) ? topics : topics.split(',').map(topic => topic.trim());
+
+  // Validate the required fields
+  if (!courseName || !topicList.length || !semester) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    // Get the syllabus collection from your MongoDB
+    const syllabusCollection = client.db('chitkaraconnect').collection('syllabus');
+
+    // Insert the syllabus data directly into the collection
+    const result = await syllabusCollection.insertOne({
+      courseName,
+      topics: topicList,
+      semester,
+      createdAt: new Date(),  // Optionally add a timestamp
+    });
+
+    // Return a success response with the inserted syllabus ID
+    res.status(201).json({ message: 'Syllabus added successfully!', syllabusId: result.insertedId });
+  } catch (error) {
+    console.error('Error adding syllabus:', error);
+    res.status(500).json({ message: 'Error adding syllabus', error: error.message });
+  }
+});
+
+app.get('/api/syllabus', async (req, res) => {
+  try {
+    const syllabusCollection = client.db('chitkaraconnect').collection('syllabus');
+    const syllabusData = await syllabusCollection.find({}).toArray(); // Fetch all syllabus documents
+    res.status(200).json(syllabusData);
+  } catch (error) {
+    console.error('Error fetching syllabus:', error);
+    res.status(500).json({ message: 'Error fetching syllabus', error: error.message });
+  }
+});
+
+
+// POST route to add a support request
+app.post('/api/support-add', async (req, res) => {
+  const { name, email, role, queryType, message } = req.body;
+
+  if (!name || !email || !role || !queryType || !message) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    // Get the support collection from your MongoDB
+    const supportCollection = client.db('chitkaraconnect').collection('support');
+
+    // Prepare the support request document to be inserted
+    const supportData = {
+      name,
+      email,
+      role,
+      queryType,
+      message,
+      createdAt: new Date(), // Add timestamp for when the request is created
+    };
+
+    // Insert the support data directly into the 'support' collection
+    const result = await supportCollection.insertOne(supportData);
+
+    // Respond back with success message and the inserted support request ID
+    res.status(201).json({
+      message: 'Thank you for your feedback! We\'ll get back to you shortly.',
+      supportId: result.insertedId,
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Failed to add support request. Please try again.' });
   }
 });
 

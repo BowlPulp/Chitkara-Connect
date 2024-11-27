@@ -11,6 +11,8 @@ const StudentGatepass = () => {
     time: "",
     reason: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [responseMessage, setResponseMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,19 +22,46 @@ const StudentGatepass = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Reset form after submission if needed
-    setFormData({
-      name: "",
-      rollNo: "",
-      email: "",
-      contact: "",
-      date: "",
-      time: "",
-      reason: "",
-    });
+    setLoading(true);
+    setResponseMessage(""); // Reset the response message before sending
+
+    try {
+      const response = await fetch("http://localhost:3000/api/submit-gatepass", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          approvedStatus: "pending", // Assuming a default "pending" status for new applications
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setResponseMessage("Gate pass submitted successfully!");
+        // Optionally reset the form after successful submission
+        setFormData({
+          name: "",
+          rollNo: "",
+          email: "",
+          contact: "",
+          date: "",
+          time: "",
+          reason: "",
+        });
+      } else {
+        setResponseMessage(data.message || "Failed to submit gate pass.");
+      }
+    } catch (error) {
+      setResponseMessage("Error submitting gate pass.");
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderContent = () => {
@@ -41,10 +70,9 @@ const StudentGatepass = () => {
         return (
           <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold text-center text-gray-200">Apply for Gate Pass</h2>
+            {/* Form Fields */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-400">
-                Name
-              </label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-400">Name</label>
               <input
                 type="text"
                 id="name"
@@ -58,9 +86,7 @@ const StudentGatepass = () => {
             </div>
 
             <div>
-              <label htmlFor="rollNo" className="block text-sm font-medium text-gray-400">
-                Roll No
-              </label>
+              <label htmlFor="rollNo" className="block text-sm font-medium text-gray-400">Roll No</label>
               <input
                 type="text"
                 id="rollNo"
@@ -74,9 +100,7 @@ const StudentGatepass = () => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-400">
-                Email
-              </label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-400">Email</label>
               <input
                 type="email"
                 id="email"
@@ -90,9 +114,7 @@ const StudentGatepass = () => {
             </div>
 
             <div>
-              <label htmlFor="contact" className="block text-sm font-medium text-gray-400">
-                Contact Number
-              </label>
+              <label htmlFor="contact" className="block text-sm font-medium text-gray-400">Contact Number</label>
               <input
                 type="tel"
                 id="contact"
@@ -106,9 +128,7 @@ const StudentGatepass = () => {
             </div>
 
             <div>
-              <label htmlFor="date" className="block text-sm font-medium text-gray-400">
-                Date
-              </label>
+              <label htmlFor="date" className="block text-sm font-medium text-gray-400">Date</label>
               <input
                 type="date"
                 id="date"
@@ -121,9 +141,7 @@ const StudentGatepass = () => {
             </div>
 
             <div>
-              <label htmlFor="time" className="block text-sm font-medium text-gray-400">
-                Time
-              </label>
+              <label htmlFor="time" className="block text-sm font-medium text-gray-400">Time</label>
               <input
                 type="time"
                 id="time"
@@ -136,9 +154,7 @@ const StudentGatepass = () => {
             </div>
 
             <div>
-              <label htmlFor="reason" className="block text-sm font-medium text-gray-400">
-                Reason
-              </label>
+              <label htmlFor="reason" className="block text-sm font-medium text-gray-400">Reason</label>
               <textarea
                 id="reason"
                 name="reason"
@@ -153,8 +169,9 @@ const StudentGatepass = () => {
             <button
               type="submit"
               className="w-full px-4 py-2 font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              disabled={loading}
             >
-              Submit Application
+              {loading ? "Submitting..." : "Submit Application"}
             </button>
           </form>
         );
@@ -163,7 +180,6 @@ const StudentGatepass = () => {
           <div>
             <h2 className="text-xl font-bold text-center">Applied Gate Pass</h2>
             <p className="text-gray-200">This section displays all applied gate passes.</p>
-            {/* Display applied gate passes here */}
           </div>
         );
       case "approvedGatepass":
@@ -171,7 +187,6 @@ const StudentGatepass = () => {
           <div>
             <h2 className="text-xl font-bold text-center">Approved Gate Pass</h2>
             <p className="text-gray-200">This section shows all approved gate passes.</p>
-            {/* Display approved gate passes here */}
           </div>
         );
       case "rejectedGatepass":
@@ -179,7 +194,6 @@ const StudentGatepass = () => {
           <div>
             <h2 className="text-xl font-bold text-center">Rejected Gate Pass</h2>
             <p className="text-gray-200">This section shows all rejected gate passes.</p>
-            {/* Display rejected gate passes here */}
           </div>
         );
       default:
@@ -236,7 +250,10 @@ const StudentGatepass = () => {
       </nav>
 
       {/* Content Area */}
-      <div className="p-4 md:p-8">{renderContent()}</div>
+      <div className="p-4 md:p-8">
+        {renderContent()}
+        {responseMessage && <p className="text-center text-gray-300 mt-4">{responseMessage}</p>}
+      </div>
     </div>
   );
 };
