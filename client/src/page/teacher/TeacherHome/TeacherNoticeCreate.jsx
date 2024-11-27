@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 const TeacherNoticeCreate = () => {
   const [activeTab, setActiveTab] = useState("createMentorNotice");
+  const [loading, setLoading] = useState(false); // Define loading state
+
   const [mentorNotice, setMentorNotice] = useState({
     teacherName: "",
     email: "",
@@ -22,6 +24,7 @@ const TeacherNoticeCreate = () => {
     description: "",
   });
 
+  // Handle form changes
   const handleMentorNoticeChange = (e) => {
     const { name, value } = e.target;
     setMentorNotice({ ...mentorNotice, [name]: value });
@@ -37,11 +40,83 @@ const TeacherNoticeCreate = () => {
     setGeneralNotice({ ...generalNotice, [name]: value });
   };
 
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    let formData = {};
+
+    if (activeTab === "createMentorNotice") {
+      formData = {
+        type: "mentorNotice",
+        data: mentorNotice,
+      };
+    } else if (activeTab === "createEvent") {
+      formData = {
+        type: "eventNotice",
+        data: eventNotice,
+      };
+    } else if (activeTab === "createNotice") {
+      formData = {
+        type: "generalNotice",
+        data: generalNotice,
+      };
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/api/create-notice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert('Notice created successfully');
+        // Clear the form based on active tab
+        if (activeTab === "createMentorNotice") {
+          setMentorNotice({
+            teacherName: "",
+            email: "",
+            heading: "",
+            description: "",
+          });
+        } else if (activeTab === "createEvent") {
+          setEventNotice({
+            eventName: "",
+            hostBy: "",
+            contactEmail: "",
+            date: "",
+            time: "",
+            description: "",
+          });
+        } else if (activeTab === "createNotice") {
+          setGeneralNotice({
+            heading: "",
+            contactEmail: "",
+            description: "",
+          });
+        }
+      } else {
+        alert(result.message || 'Error creating notice');
+      }
+    } catch (error) {
+      console.error('Error submitting notice:', error);
+      alert('Error submitting notice');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Render different forms based on the active tab
   const renderContent = () => {
     switch (activeTab) {
       case "createMentorNotice":
         return (
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <h2 className="text-lg font-semibold">Create Mentor Notice</h2>
             <input
               type="text"
@@ -81,14 +156,15 @@ const TeacherNoticeCreate = () => {
             <button
               type="submit"
               className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700"
+              disabled={loading}
             >
-              Submit Mentor Notice
+              {loading ? 'Submitting...' : 'Submit Mentor Notice'}
             </button>
           </form>
         );
       case "createEvent":
         return (
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <h2 className="text-lg font-semibold">Create Event</h2>
             <input
               type="text"
@@ -144,14 +220,15 @@ const TeacherNoticeCreate = () => {
             <button
               type="submit"
               className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700"
+              disabled={loading}
             >
-              Submit Event
+              {loading ? 'Submitting...' : 'Submit Event'}
             </button>
           </form>
         );
       case "createNotice":
         return (
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <h2 className="text-lg font-semibold">Create General Notice</h2>
             <input
               type="text"
@@ -182,8 +259,9 @@ const TeacherNoticeCreate = () => {
             <button
               type="submit"
               className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700"
+              disabled={loading}
             >
-              Submit General Notice
+              {loading ? 'Submitting...' : 'Submit General Notice'}
             </button>
           </form>
         );
@@ -199,41 +277,34 @@ const TeacherNoticeCreate = () => {
         <div className="flex justify-center space-x-8">
           <button
             onClick={() => setActiveTab("createMentorNotice")}
-            className={`px-4 py-2 font-semibold rounded-md ${
+            className={`px-4 py-2 rounded-md ${
               activeTab === "createMentorNotice"
                 ? "bg-red-600 text-white"
-                : "hover:text-red-400 text-gray-400"
+                : "bg-gray-700"
             }`}
           >
-            Create Mentor Notice
+            Mentor Notice
           </button>
           <button
             onClick={() => setActiveTab("createEvent")}
-            className={`px-4 py-2 font-semibold rounded-md ${
-              activeTab === "createEvent"
-                ? "bg-red-600 text-white"
-                : "hover:text-red-400 text-gray-400"
+            className={`px-4 py-2 rounded-md ${
+              activeTab === "createEvent" ? "bg-red-600 text-white" : "bg-gray-700"
             }`}
           >
-            Create Event
+            Event
           </button>
           <button
             onClick={() => setActiveTab("createNotice")}
-            className={`px-4 py-2 font-semibold rounded-md ${
-              activeTab === "createNotice"
-                ? "bg-red-600 text-white"
-                : "hover:text-red-400 text-gray-400"
+            className={`px-4 py-2 rounded-md ${
+              activeTab === "createNotice" ? "bg-red-600 text-white" : "bg-gray-700"
             }`}
           >
-            Create Notice
+            General Notice
           </button>
         </div>
       </nav>
-
-      {/* Content Area */}
-      <div className="p-8 bg-gray-800 rounded-md shadow-md">
-        {renderContent()}
-      </div>
+      
+      <div className="max-w-4xl mx-auto">{renderContent()}</div>
     </div>
   );
 };

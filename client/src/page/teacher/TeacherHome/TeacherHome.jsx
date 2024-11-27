@@ -1,7 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import TeacherNoticeCreate from "./TeacherNoticeCreate";
 
 const TeacherHome = () => {
   const [activeTab, setActiveTab] = useState("mentorNotice");
+  const [mentorNotices, setMentorNotices] = useState([]); // State to store mentor notices
+  const [events, setEvents] = useState([]); // State to store events
+  const [notices, setNotices] = useState([]); // State to store notices
+  const [loading, setLoading] = useState(true); // Loading state to show loading spinner
+
+  // Function to fetch data for mentor notices, events, and notices
+  const fetchData = async () => {
+    try {
+      const mentorNoticeResponse = await axios.get("http://localhost:3000/api/get-mentor-notices");
+      const eventResponse = await axios.get("http://localhost:3000/api/get-events");
+      const noticeResponse = await axios.get("http://localhost:3000/api/get-notices");
+
+      setMentorNotices(mentorNoticeResponse.data); // Set mentor notices
+      setEvents(eventResponse.data); // Set events
+      setNotices(noticeResponse.data); // Set notices
+      setLoading(false); // Set loading to false once data is fetched
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false); // Set loading to false even if there's an error
+    }
+  };
+
+  // Fetch data when component mounts
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -9,28 +37,61 @@ const TeacherHome = () => {
         return (
           <div>
             <h2 className="text-lg font-semibold">Mentor Notices</h2>
-            <p className="text-gray-300">This section displays mentor notices.</p>
+            {loading ? (
+              <p>Loading mentor notices...</p>
+            ) : (
+              mentorNotices.map((notice) => (
+                <div key={notice._id} className="bg-gray-800 p-4 rounded-md mb-4">
+                  <h3 className="text-xl font-semibold text-red-600">{notice.heading}</h3>
+                  <p className="text-gray-400">{notice.description}</p>
+                  <p className="text-gray-500">Teacher: {notice.teacherName}</p>
+                  <p className="text-gray-500">Contact: {notice.email}</p>
+                </div>
+              ))
+            )}
           </div>
         );
       case "events":
         return (
           <div>
             <h2 className="text-lg font-semibold">Events</h2>
-            <p className="text-gray-300">This section displays upcoming events.</p>
+            {loading ? (
+              <p>Loading events...</p>
+            ) : (
+              events.map((event) => (
+                <div key={event._id} className="bg-gray-800 p-4 rounded-md mb-4">
+                  <h3 className="text-xl font-semibold text-red-600">{event.eventName}</h3>
+                  <p className="text-gray-400">{event.description}</p>
+                  <p className="text-gray-500">Hosted by: {event.hostBy}</p>
+                  <p className="text-gray-500">Date: {event.date}</p>
+                  <p className="text-gray-500">Time: {event.time}</p>
+                  <p className="text-gray-500">Contact: {event.contactEmail}</p>
+                </div>
+              ))
+            )}
           </div>
         );
       case "notices":
         return (
           <div>
             <h2 className="text-lg font-semibold">Notices</h2>
-            <p className="text-gray-300">This section displays various notices.</p>
+            {loading ? (
+              <p>Loading notices...</p>
+            ) : (
+              notices.map((notice) => (
+                <div key={notice._id} className="bg-gray-800 p-4 rounded-md mb-4">
+                  <h3 className="text-xl font-semibold text-red-600">{notice.heading}</h3>
+                  <p className="text-gray-400">{notice.description}</p>
+                </div>
+              ))
+            )}
           </div>
         );
       case "create":
         return (
           <div>
             <h2 className="text-lg font-semibold">Create New Item</h2>
-            <p className="text-gray-300">This section will allow you to create new notices or events.</p>
+            <TeacherNoticeCreate />
           </div>
         );
       default:

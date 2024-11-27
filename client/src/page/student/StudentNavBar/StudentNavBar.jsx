@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import Chitkaralogo from "/chitkaraLogo.jpeg";
 import profile from "/profile.png";
@@ -6,26 +6,43 @@ import profile from "/profile.png";
 const StudentNavBar = () => {
   const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [student, setStudent] = useState({
+    name: "Loading...", // Default placeholder text
+    email: "",
+    RollNo: "",
+  });
 
-  // Dummy student data
-  const student = {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    RollNo: "123456",
-  };
+  // Fetch user data from the backend
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/user-details", {
+          method: "GET",
+          credentials: "include", // Important to send cookies with the request
+        });
 
-  const toggleProfileDropdown = () => {
-    setProfileDropdownOpen(!isProfileDropdownOpen);
-  };
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Fetched student data:", data); // Add this log to check data
+          setStudent(data); // Assuming the backend returns { name, email, RollNo }
+        } else {
+          console.error("Failed to fetch user details.");
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!isMobileMenuOpen);
-  };
+    fetchUserData();
+  }, []);
+
+  const toggleProfileDropdown = () => setProfileDropdownOpen(!isProfileDropdownOpen);
+  const toggleMobileMenu = () => setMobileMenuOpen(!isMobileMenuOpen);
 
   return (
     <nav className="bg-gray-900 text-gray-200 p-4 shadow-lg border-b border-white">
       <div className="container mx-auto flex justify-between items-center">
-        {/* Logo and Text */}
+        {/* Logo */}
         <div className="flex items-center space-x-6">
           <Link to="/student/home" className="flex items-center space-x-2">
             <img className="w-12 h-12 md:w-16 md:h-16 rounded-lg" src={Chitkaralogo} alt="Logo" />
@@ -44,7 +61,7 @@ const StudentNavBar = () => {
           <NavLink to="/student/help" className={({ isActive }) => (isActive ? "text-[#EB1C24]" : "hover:text-[#EB1C24] text-gray-400")}>Help</NavLink>
         </div>
 
-        {/* Profile and Mobile Menu Button */}
+        {/* Profile and Mobile Menu */}
         <div className="relative flex items-center space-x-4">
           <div className="lg:hidden">
             <button onClick={toggleMobileMenu} className="focus:outline-none">
@@ -52,15 +69,8 @@ const StudentNavBar = () => {
             </button>
           </div>
           <div className="relative">
-            <button
-              onClick={toggleProfileDropdown}
-              className="flex items-center space-x-2 focus:outline-none"
-            >
-              <img
-                className="w-8 h-8 rounded-full border-2 bg-slate-500 border-gray-600"
-                src={profile}
-                alt="Profile"
-              />
+            <button onClick={toggleProfileDropdown} className="flex items-center space-x-2 focus:outline-none">
+              <img className="w-8 h-8 rounded-full border-2 bg-slate-500 border-gray-600" src={profile} alt="Profile" />
               <span className="hidden md:inline-block font-medium">{student.name}</span>
             </button>
             {isProfileDropdownOpen && (
