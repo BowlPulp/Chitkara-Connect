@@ -27,6 +27,7 @@ let noticesCollection;
 let gatepassCollection;
 let performanceCollection;
 let attendanceCollection;
+let queryCollection;
 
 async function run() {
   try {
@@ -39,6 +40,7 @@ async function run() {
     gatepassCollection = db.collection('gatepass');
     performanceCollection = db.collection('performance');
     attendanceCollection = db.collection('attendance');
+    queryCollection = db.collection('queries')
     console.log("Connected to MongoDB and ready to handle requests!");
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
@@ -89,7 +91,7 @@ app.post('/api/login', async (req, res) => {
       }
 
       const token = jwt.sign(
-        { userId: user._id, role: 'student', RollNo: user.RollNo, name: user.name },
+        { userId: user._id, role: 'student', RollNo: user.RollNo, name: user.name ,email:user.email},
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
       );
@@ -111,7 +113,7 @@ app.post('/api/login', async (req, res) => {
       }
 
       const token = jwt.sign(
-        { userId: user._id, role: 'teacher', teacherId: user.teacherId, name: user.name },
+        { userId: user._id, role: 'teacher', teacherId: user.teacherId, name: user.name , email:user.email},
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
       );
@@ -762,6 +764,47 @@ app.post('/api/mark-attendance', async (req, res) => {
   }
 });
 
+// POST route to submit a support query into the queryCollection
+app.post('/api/submit-query', async (req, res) => {
+  const { name, rollNo, email, topic, tags, query, likes = 0, solution = null } = req.body;
+
+  // Validate the required fields
+  if (!name || !email || !rollNo || !topic || !query) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  // Validate the 'tags' field to ensure it's an array
+  if (tags && !Array.isArray(tags)) {
+    return res.status(400).json({ message: 'Tags must be an array' });
+  }
+
+  try {
+    // Prepare the query data document to be inserted into the queryCollection
+    const queryData = {
+      name,
+      rollNo,
+      email,
+      topic,
+      tags: tags || [], // Set default empty array for tags if not provided
+      description: query, // Assuming 'query' is the query message you want to save
+      likes,
+      solution,
+      createdAt: new Date(), // Add timestamp for when the query is created
+    };
+
+    // Insert the query data into the 'queries' collection in MongoDB
+    const result = await queryCollection.insertOne(queryData);
+
+    // Respond back with a success message and the inserted query ID
+    res.status(201).json({
+      message: 'Your query has been submitted successfully! We will respond shortly.',
+      queryId: result.insertedId,
+    });
+  } catch (error) {
+    console.error('Error submitting query:', error);
+    res.status(500).json({ message: 'Failed to submit query. Please try again later.' });
+  }
+});
 
 
 
