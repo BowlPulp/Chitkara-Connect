@@ -1,17 +1,53 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 import chitkaraLogo from "/chitkaraLogo.jpeg"; // Adjust the path as needed
 import profile from "/profile.png"; // Adjust the path for the profile image
 
 const TeacherNavBar = () => {
+  const [teacher, setTeacher] = useState({
+    name: "Loading...",
+    email: "",
+    teacherId: "", // Make sure teacherId is in the state
+  });
   const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate(); // Hook for redirection
 
-  // Dummy teacher data
-  const teacher = {
-    name: "Jane Smith",
-    email: "janesmith@example.com",
-  };
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+    if (token) {
+      fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status} ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // Extract teacher data from the decoded object
+          const { name, email, teacherId } = data.decoded;
+
+          setTeacher({
+            name,
+            email,
+            teacherId,
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching teacher data:", error);
+          setTeacher({
+            name: "Error fetching data",
+            email: "",
+            teacherId: "",
+          });
+        });
+    }
+  }, []);
 
   const toggleProfileDropdown = () => {
     setProfileDropdownOpen(!isProfileDropdownOpen);
@@ -19,6 +55,15 @@ const TeacherNavBar = () => {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // Logout function
+  const logout = () => {
+    // Clear the JWT token from localStorage
+    localStorage.removeItem("jwtToken");
+
+    // Redirect to the login page or home page after logout
+    navigate("/"); // Or change it to navigate("/") for the home page
   };
 
   return (
@@ -74,6 +119,7 @@ const TeacherNavBar = () => {
                 <div className="px-4 py-2 text-sm">
                   <p className="font-semibold">{teacher.name}</p>
                   <p className="text-gray-400">{teacher.email}</p>
+                  <p className="text-gray-400">Teacher ID: {teacher.teacherId}</p> {/* Display the Teacher ID */}
                 </div>
                 <div className="border-t border-gray-700"></div>
                 <Link
@@ -82,12 +128,12 @@ const TeacherNavBar = () => {
                 >
                   View Profile
                 </Link>
-                <Link
-                  to="/logout"
+                <button
+                  onClick={logout} // Logout on button click
                   className="block px-4 py-2 text-sm hover:bg-gray-700"
                 >
                   Logout
-                </Link>
+                </button>
               </div>
             )}
           </div>
