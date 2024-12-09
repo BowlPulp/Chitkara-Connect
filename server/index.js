@@ -187,6 +187,31 @@ app.get('/api/post-data-from-token/:token', (req, res) => {
 });
 
 
+// API to fetch student details by RollNo
+app.get('/api/student-details/:rollNo', async (req, res) => {
+  const { rollNo } = req.params; // Extract RollNo from the URL parameter
+
+  if (!rollNo) {
+    return res.status(400).json({ message: 'RollNo is required' });
+  }
+
+  try {
+    // Fetch the student's details from the collection using the RollNo
+    const studentData = await studentsCollection.findOne({ RollNo: parseInt(rollNo, 10) });
+
+    if (!studentData) {
+      return res.status(404).json({ message: `No student found with RollNo: ${rollNo}` });
+    }
+
+    // Return the student's details
+    res.status(200).json(studentData);
+  } catch (error) {
+    console.error('Error fetching student details:', error);
+    res.status(500).json({ message: 'Error fetching student details' });
+  }
+});
+
+
 
 // Fetch Student Performance based on RollNo
 // API to fetch performance data by RollNo
@@ -489,6 +514,85 @@ app.post('/api/submit-gatepass', async (req, res) => {
     res.status(500).json({ message: 'Error submitting gate pass' });
   }
 });
+
+// API to fetch approved gatepasses
+// API to fetch approved gatepasses by rollNo
+app.get('/api/gatepasses/approved/:rollNo', async (req, res) => {
+  const { rollNo } = req.params; // Extract rollNo from the URL parameter
+
+  if (!rollNo) {
+    return res.status(400).json({ message: 'RollNo is required' });
+  }
+
+  try {
+    // Query the gatepass collection for approved gatepasses for the specific rollNo
+    const approvedGatepasses = await gatepassCollection.find({ rollNo: parseInt(rollNo), approvedStatus: 'approved' }).toArray();
+
+    // Return the approved gatepasses as JSON response
+    if (approvedGatepasses.length === 0) {
+      return res.status(404).json({ message: `No approved gatepasses found for RollNo: ${rollNo}` });
+    }
+
+    res.json(approvedGatepasses);
+  } catch (error) {
+    console.error('Error fetching approved gatepasses:', error);
+    res.status(500).json({ message: 'Error fetching approved gatepasses' });
+  }
+});
+
+
+// API to fetch rejected gatepasses
+// API to fetch rejected gatepasses by rollNo
+app.get('/api/gatepasses/rejected/:rollNo', async (req, res) => {
+  const { rollNo } = req.params; // Extract rollNo from the URL parameter
+
+  if (!rollNo) {
+    return res.status(400).json({ message: 'RollNo is required' });
+  }
+
+  try {
+    // Query the gatepass collection for rejected gatepasses for the specific rollNo
+    const rejectedGatepasses = await gatepassCollection.find({ rollNo: parseInt(rollNo), approvedStatus: 'rejected' }).toArray();
+
+    // Return the rejected gatepasses as JSON response
+    if (rejectedGatepasses.length === 0) {
+      return res.status(404).json({ message: `No rejected gatepasses found for RollNo: ${rollNo}` });
+    }
+
+    res.json(rejectedGatepasses);
+  } catch (error) {
+    console.error('Error fetching rejected gatepasses:', error);
+    res.status(500).json({ message: 'Error fetching rejected gatepasses' });
+  }
+});
+
+
+
+// API to fetch pending gatepasses
+// API to fetch pending gatepasses by rollNo
+app.get('/api/gatepasses/pending/:rollNo', async (req, res) => {
+  const { rollNo } = req.params; // Extract rollNo from the URL parameter
+
+  if (!rollNo) {
+    return res.status(400).json({ message: 'RollNo is required' });
+  }
+
+  try {
+    // Query the gatepass collection for pending gatepasses for the specific rollNo
+    const pendingGatepasses = await gatepassCollection.find({ rollNo: parseInt(rollNo), approvedStatus: 'pending' }).toArray();
+
+    // Return the pending gatepasses as JSON response
+    if (pendingGatepasses.length === 0) {
+      return res.status(404).json({ message: `No pending gatepasses found for RollNo: ${rollNo}` });
+    }
+
+    res.json(pendingGatepasses);
+  } catch (error) {
+    console.error('Error fetching pending gatepasses:', error);
+    res.status(500).json({ message: 'Error fetching pending gatepasses' });
+  }
+});
+
 
 app.post('/api/syllabus-add', async (req, res) => {
   const { courseName, topics, semester } = req.body;

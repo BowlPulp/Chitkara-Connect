@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const StudentGatepass = () => {
   const [activeTab, setActiveTab] = useState("applyForGatepass");
@@ -6,13 +6,114 @@ const StudentGatepass = () => {
     name: "",
     rollNo: "",
     email: "",
-    contact: "",
+    contact: "", // This will store the phone number
     date: "",
     time: "",
     reason: "",
   });
   const [loading, setLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState("");
+  const [studentData, setStudentData] = useState({ name: "", email: "", rollNo: "", contact: "" });
+  const [appliedGatepasses, setAppliedGatepasses] = useState([]);
+  const [approvedGatepasses, setApprovedGatepasses] = useState([]);
+  const [rejectedGatepasses, setRejectedGatepasses] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+
+    if (token) {
+      // First, fetch the user details from the token
+      fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status} ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const { RollNo } = data.decoded;
+
+          // Fetch the student details using the RollNo
+          return fetch(`http://localhost:3000/api/student-details/${RollNo}`);
+        })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error fetching student details");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const { name, email, RollNo, phoneNo } = data;
+          setStudentData({ name, email, rollNo: RollNo, contact: phoneNo });
+          setFormData({
+            name,
+            email,
+            rollNo: RollNo,
+            contact: phoneNo,
+            date: "",
+            time: "",
+            reason: "",
+          });
+
+          // Now that we have the student details, fetch the pending, approved, and rejected gatepasses
+          return RollNo;
+        })
+        .then((RollNo) => {
+          // Fetch pending gatepasses for the student
+          return fetch(`http://localhost:3000/api/gatepasses/pending/${RollNo}`);
+        })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error fetching pending gatepasses");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setAppliedGatepasses(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching pending gatepasses:", error);
+          setAppliedGatepasses([]); // Reset to an empty array in case of error
+        });
+
+      // Fetch approved gatepasses after fetching student data
+      fetch(`http://localhost:3000/api/gatepasses/approved/${studentData.rollNo}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error fetching approved gatepasses");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setApprovedGatepasses(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching approved gatepasses:", error);
+          setApprovedGatepasses([]); // Reset to empty array in case of error
+        });
+
+      // Fetch rejected gatepasses after fetching student data
+      fetch(`http://localhost:3000/api/gatepasses/rejected/${studentData.rollNo}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error fetching rejected gatepasses");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setRejectedGatepasses(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching rejected gatepasses:", error);
+          setRejectedGatepasses([]); // Reset to empty array in case of error
+        });
+    }
+  }, [studentData.rollNo , activeTab]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,7 +126,7 @@ const StudentGatepass = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setResponseMessage(""); // Reset the response message before sending
+    setResponseMessage("");
 
     try {
       const response = await fetch("http://localhost:3000/api/submit-gatepass", {
@@ -35,7 +136,7 @@ const StudentGatepass = () => {
         },
         body: JSON.stringify({
           ...formData,
-          approvedStatus: "pending", // Assuming a default "pending" status for new applications
+          approvedStatus: "pending",
         }),
       });
 
@@ -43,12 +144,9 @@ const StudentGatepass = () => {
 
       if (response.ok) {
         setResponseMessage("Gate pass submitted successfully!");
-        // Optionally reset the form after successful submission
         setFormData({
-          name: "",
-          rollNo: "",
-          email: "",
-          contact: "",
+          ...studentData, // Reset the uneditable fields
+          contact: studentData.contact, // Ensure contact remains unchanged
           date: "",
           time: "",
           reason: "",
@@ -70,7 +168,8 @@ const StudentGatepass = () => {
         return (
           <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold text-center text-gray-200">Apply for Gate Pass</h2>
-            {/* Form Fields */}
+
+            {/* Name (Uneditable) */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-400">Name</label>
               <input
@@ -78,13 +177,12 @@ const StudentGatepass = () => {
                 id="name"
                 name="name"
                 value={formData.name}
-                onChange={handleChange}
-                placeholder="Enter your name"
-                className="w-full px-4 py-2 mt-2 text-gray-300 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
+                readOnly
+                className="w-full px-4 py-2 mt-2 text-gray-300 bg-gray-600 rounded-lg focus:outline-none"
               />
             </div>
 
+            {/* Roll Number (Uneditable) */}
             <div>
               <label htmlFor="rollNo" className="block text-sm font-medium text-gray-400">Roll No</label>
               <input
@@ -92,13 +190,12 @@ const StudentGatepass = () => {
                 id="rollNo"
                 name="rollNo"
                 value={formData.rollNo}
-                onChange={handleChange}
-                placeholder="Enter your Roll Number"
-                className="w-full px-4 py-2 mt-2 text-gray-300 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
+                readOnly
+                className="w-full px-4 py-2 mt-2 text-gray-300 bg-gray-600 rounded-lg focus:outline-none"
               />
             </div>
 
+            {/* Email (Uneditable) */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-400">Email</label>
               <input
@@ -106,13 +203,12 @@ const StudentGatepass = () => {
                 id="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
-                placeholder="Enter your email"
-                className="w-full px-4 py-2 mt-2 text-gray-300 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
+                readOnly
+                className="w-full px-4 py-2 mt-2 text-gray-300 bg-gray-600 rounded-lg focus:outline-none"
               />
             </div>
 
+            {/* Contact Number (Uneditable) */}
             <div>
               <label htmlFor="contact" className="block text-sm font-medium text-gray-400">Contact Number</label>
               <input
@@ -120,13 +216,12 @@ const StudentGatepass = () => {
                 id="contact"
                 name="contact"
                 value={formData.contact}
-                onChange={handleChange}
-                placeholder="Enter your contact number"
-                className="w-full px-4 py-2 mt-2 text-gray-300 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
+                readOnly
+                className="w-full px-4 py-2 mt-2 text-gray-300 bg-gray-600 rounded-lg focus:outline-none"
               />
             </div>
 
+            {/* Date */}
             <div>
               <label htmlFor="date" className="block text-sm font-medium text-gray-400">Date</label>
               <input
@@ -140,6 +235,7 @@ const StudentGatepass = () => {
               />
             </div>
 
+            {/* Time */}
             <div>
               <label htmlFor="time" className="block text-sm font-medium text-gray-400">Time</label>
               <input
@@ -153,6 +249,7 @@ const StudentGatepass = () => {
               />
             </div>
 
+            {/* Reason */}
             <div>
               <label htmlFor="reason" className="block text-sm font-medium text-gray-400">Reason</label>
               <textarea
@@ -166,6 +263,7 @@ const StudentGatepass = () => {
               />
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               className="w-full px-4 py-2 font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
@@ -175,30 +273,121 @@ const StudentGatepass = () => {
             </button>
           </form>
         );
-      case "appliedGatepass":
-        return (
-          <div>
-            <h2 className="text-xl font-bold text-center">Applied Gate Pass</h2>
-            <p className="text-gray-200">This section displays all applied gate passes.</p>
-          </div>
-        );
-      case "approvedGatepass":
-        return (
-          <div>
-            <h2 className="text-xl font-bold text-center">Approved Gate Pass</h2>
-            <p className="text-gray-200">This section shows all approved gate passes.</p>
-          </div>
-        );
-      case "rejectedGatepass":
-        return (
-          <div>
-            <h2 className="text-xl font-bold text-center">Rejected Gate Pass</h2>
-            <p className="text-gray-200">This section shows all rejected gate passes.</p>
-          </div>
-        );
-      default:
-        return <p className="text-gray-200">Select a tab to view content.</p>;
-    }
+        case "appliedGatepass":
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-center mb-4">Applied Gate Pass</h2>
+
+      {appliedGatepasses.length > 0 ? (
+        <ul className="space-y-4">
+          {appliedGatepasses.map((gatepass) => (
+            <li
+              key={gatepass._id}
+              className="bg-gray-800 p-6  rounded-lg shadow-md border-2 border-yellow-500 hover:shadow-xl transition-all"
+            >
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-2xl font-semibold">{gatepass.name}</h3>
+                <span className="text-gray-400 text-sm">Gatepass ID: {gatepass._id}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-gray-300">
+                <p><strong>Roll No:</strong> {gatepass.rollNo}</p>
+                <p><strong>Email:</strong> {gatepass.email}</p>
+                <p><strong>Contact:</strong> {gatepass.contact}</p>
+                <p><strong>Date:</strong> {gatepass.date}</p>
+                <p><strong>Time:</strong> {gatepass.time}</p>
+                <p><strong>Reason:</strong> {gatepass.reason}</p>
+                <p><strong>Status: </strong> 
+                  <span className={`font-bold uppercase ${gatepass.approvedStatus === 'approved' ? 'text-green-500' : gatepass.approvedStatus === 'rejected' ? 'text-red-500' : 'text-yellow-500'}`}>
+                    {gatepass.approvedStatus}
+                  </span>
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-400">You have no applied gate passes.</p>
+      )}
+    </div>
+  );
+
+case "approvedGatepass":
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-center mb-4">Approved Gate Pass</h2>
+
+      {approvedGatepasses.length > 0 ? (
+        <ul className="space-y-4">
+          {approvedGatepasses.map((gatepass) => (
+            <li
+              key={gatepass._id}
+              className="bg-gray-800 p-6 rounded-lg shadow-md border-2 border-green-500 hover:shadow-xl transition-all"
+            >
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-2xl font-semibold">{gatepass.name}</h3>
+                <span className="text-gray-400 text-sm">Gatepass ID: {gatepass._id}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-gray-300">
+                <p><strong>Roll No:</strong> {gatepass.rollNo}</p>
+                <p><strong>Email:</strong> {gatepass.email}</p>
+                <p><strong>Contact:</strong> {gatepass.contact}</p>
+                <p><strong>Date:</strong> {gatepass.date}</p>
+                <p><strong>Time:</strong> {gatepass.time}</p>
+                <p><strong>Reason:</strong> {gatepass.reason}</p>
+                <p><strong>Status: </strong> 
+                  <span className="font-bold uppercase text-green-500">{gatepass.approvedStatus}</span>
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-400">You have no approved gate passes.</p>
+      )}
+    </div>
+  );
+
+case "rejectedGatepass":
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-center mb-4">Rejected Gate Pass</h2>
+
+      {rejectedGatepasses && rejectedGatepasses.length > 0 ? (
+        <ul className="space-y-4">
+          {rejectedGatepasses.map((gatepass) => (
+            <li
+              key={gatepass._id}
+              className="bg-gray-800 p-6 rounded-lg shadow-md border-2 border-red-500 hover:shadow-xl transition-all"
+            >
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-2xl font-semibold">{gatepass.name}</h3>
+                <span className="text-gray-400 text-sm">Gatepass ID: {gatepass._id}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-gray-300">
+                <p><strong>Roll No:</strong> {gatepass.rollNo}</p>
+                <p><strong>Email:</strong> {gatepass.email}</p>
+                <p><strong>Contact:</strong> {gatepass.contact}</p>
+                <p><strong>Date:</strong> {gatepass.date}</p>
+                <p><strong>Time:</strong> {gatepass.time}</p>
+                <p><strong>Reason:</strong> {gatepass.reason}</p>
+                <p><strong>Status: </strong> 
+                  <span className="font-bold uppercase text-red-500">{gatepass.approvedStatus}</span>
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-400">You have no rejected gate passes.</p>
+      )}
+    </div>
+  );
+
+
+
+        default:
+          return <p className="text-gray-200">Select a tab to view content.</p>;
+      }
   };
 
   return (
