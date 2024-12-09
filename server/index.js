@@ -806,6 +806,69 @@ app.post('/api/submit-query', async (req, res) => {
   }
 });
 
+app.get('/api/queries-without-solution', async (req, res) => {
+  try {
+    // Fetch all queries where solution is null
+    const queries = await queryCollection.find({ solution: "null" }).toArray();
+
+    if (queries.length === 0) {
+      return res.status(404).json({ message: 'No queries without a solution found.' });
+    }
+
+    // Respond with the list of queries
+    res.status(200).json({ queries });
+  } catch (error) {
+    console.error('Error fetching queries without solution:', error);
+    res.status(500).json({ message: 'Failed to fetch queries. Please try again later.' });
+  }
+});
+
+app.get('/api/queries-with-solution', async (req, res) => {
+  try {
+    // Fetch all queries where solution is not null
+    const queries = await queryCollection.find({ solution: { $ne: "null" } }).toArray();
+
+    if (queries.length === 0) {
+      return res.status(404).json({ message: 'No queries with a solution found.' });
+    }
+
+    // Respond with the list of queries
+    res.status(200).json({ queries });
+  } catch (error) {
+    console.error('Error fetching queries with solution:', error);
+    res.status(500).json({ message: 'Failed to fetch queries. Please try again later.' });
+  }
+});
+
+
+app.get('/api/queries-by-rollno/:rollNo', async (req, res) => {
+  try {
+    // Get rollNo from URL params
+    const { rollNo } = req.params;
+
+    if (!rollNo) {
+      return res.status(400).json({ message: 'Roll number is required.' });
+    }
+
+    // Fetch all queries for the specific rollNo
+    const queries = await queryCollection.find({ rollNo: parseInt(rollNo) }).toArray();
+
+    if (queries.length === 0) {
+      return res.status(404).json({ message: `No queries found for roll number: ${rollNo}` });
+    }
+
+    // Respond with the list of queries
+    res.status(200).json({ queries });
+  } catch (error) {
+    console.error('Error fetching queries by roll number:', error);
+    res.status(500).json({ message: 'Failed to fetch queries. Please try again later.' });
+  }
+});
+
+
+
+
+
 
 
 app.listen(PORT, () => {

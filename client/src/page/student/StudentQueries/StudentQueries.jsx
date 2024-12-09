@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { FaThumbsUp, FaRegThumbsUp, FaComment } from "react-icons/fa"; // Import React Icons
 
 const StudentQueries = () => {
   const [activeTab, setActiveTab] = useState("queries");
@@ -12,16 +13,17 @@ const StudentQueries = () => {
     rollNo: "",
     email: "",
   });
-
+  const [queries, setQueries] = useState([]); // State to hold queries without solution
+  const [solvedQueries, setSolvedQueries] = useState([]); // State to hold solved queries
+  const [yourQueries, setYourQueries] = useState([]);
   // Fetch user data when component mounts
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
-      // API request to get user info from token
       fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`, // Pass token in headers
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
@@ -31,10 +33,7 @@ const StudentQueries = () => {
           return response.json();
         })
         .then((data) => {
-          // Extract user information from the decoded data
           const { name, RollNo, email } = data.decoded;
-
-          // Store the extracted data in state
           setUserData({
             name,
             rollNo: RollNo,
@@ -43,17 +42,51 @@ const StudentQueries = () => {
         })
         .catch((error) => {
           console.error("Error fetching user data:", error);
-          // Handle error (Optional: reset user data state)
-          setUserData({
-            name: "Error fetching data",
-            rollNo: "",
-            email: "",
-          });
         });
     } else {
       console.log("No token found");
     }
   }, []);
+
+  // Fetch queries without solution
+  useEffect(() => {
+    fetch("http://localhost:3000/api/queries-without-solution")
+      .then((response) => response.json())
+      .then((data) => {
+        setQueries(data.queries); // Update state with fetched queries
+      })
+      .catch((error) => {
+        console.error("Error fetching queries:", error);
+      });
+  }, []);
+
+  // Fetch solved queries
+  useEffect(() => {
+    fetch("http://localhost:3000/api/queries-with-solution")
+      .then((response) => response.json())
+      .then((data) => {
+        setSolvedQueries(data.queries); // Update state with fetched solved queries
+      })
+      .catch((error) => {
+        console.error("Error fetching solved queries:", error);
+      });
+  }, []);
+
+
+  // Fetch queries specific to the logged-in user's roll number
+useEffect(() => {
+  if (userData.rollNo) {
+    fetch(`http://localhost:3000/api/queries-by-rollno/${userData.rollNo}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setYourQueries(data.queries); // Update state with fetched queries
+      })
+      .catch((error) => {
+        console.error("Error fetching queries by rollNo:", error);
+      });
+  }
+}, [userData.rollNo]); // Trigger this effect when rollNo changes
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,13 +98,11 @@ const StudentQueries = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
-    // Process tags (separate them by commas and remove extra spaces)
     const tagsArray = formData.tags
       .split(",")
       .map((tag) => tag.trim())
       .filter((tag) => tag !== "");
-  
+
     const queryData = {
       name: userData.name,
       rollNo: userData.rollNo,
@@ -79,13 +110,10 @@ const StudentQueries = () => {
       topic: formData.topic,
       tags: tagsArray,
       query: formData.query,
-      likes: 0,  // Default likes set to 0
-      solution: null,  // Default solution is null
+      likes: 0,
+      solution: "null",
     };
-  
-    console.log("Query data to be submitted:", queryData);
-  
-    // Send query data to the API endpoint
+
     fetch("http://localhost:3000/api/submit-query", {
       method: "POST",
       headers: {
@@ -96,48 +124,169 @@ const StudentQueries = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.message) {
-          alert(data.message); // Show success or error message from the API
+          alert(data.message);
         }
       })
       .catch((error) => {
         console.error("Error submitting query:", error);
         alert("Failed to submit query. Please try again later.");
       });
-  
-    // Reset form after submission if needed
+
     setFormData({
       topic: "",
       tags: "",
       query: "",
     });
   };
-  
 
   const renderContent = () => {
     switch (activeTab) {
       case "queries":
         return (
           <div>
-            <h2 className="text-xl font-bold text-center">Queries</h2>
-            <p className="text-gray-200">This section displays all queries.</p>
-            {/* Display existing queries here */}
+            {/* Render queries without a solution */}
+            <div className="space-y-6 mt-6">
+              {queries.length > 0 ? (
+                queries.map((query, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl"
+                  >
+                    <h3 className="text-xl font-semibold text-gray-200">
+                      {query.topic}
+                    </h3>
+                    <p className="text-gray-300 mt-2">{query.description}</p>
+                    <div className="flex flex-col flex-wrap gap-4 mt-2 text-sm text-gray-500">
+                      <span className="py-1 ">{query.tags.join(", ")}</span>
+                      <span className="flex items-center">
+                        <FaComment className="inline-block mr-2 text-gray-400" />
+                        Solution:&nbsp;
+                        <span className="bg-gray-700 px-3 py-1 rounded-lg">
+                          {query.solution}
+                        </span>
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap justify-between items-center mt-4">
+                      <div className="flex items-center space-x-2">
+                        <FaRegThumbsUp className="text-gray-400" />
+                        <span className="text-gray-300">{query.likes}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">
+                          {new Date(query.createdAt).toLocaleDateString("en-US", {
+                            weekday: "short",
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400">No queries without a solution found.</p>
+              )}
+            </div>
           </div>
         );
       case "sovedQueries":
         return (
           <div>
-            <h2 className="text-xl font-bold text-center">Solved Queries</h2>
-            <p className="text-gray-200">This section displays all solved queries.</p>
-            {/* Display solved queries here */}
+            {/* Render solved queries */}
+            <div className="space-y-6 mt-6">
+              {solvedQueries.length > 0 ? (
+                solvedQueries.map((query, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl"
+                  >
+                    <h3 className="text-xl font-semibold text-gray-200">
+                      {query.topic}
+                    </h3>
+                    <p className="text-gray-300 mt-2">{query.description}</p>
+                    <div className="flex flex-col flex-wrap gap-4 mt-2 text-sm text-gray-500">
+                      <span className="py-1 ">{query.tags.join(", ")}</span>
+                      <span className="flex items-center">
+                        <FaComment className="inline-block mr-2 text-gray-400" />
+                        Solution:&nbsp;
+                        <span className="bg-gray-700 px-3 py-1 rounded-lg">
+                          {query.solution}
+                        </span>
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap justify-between items-center mt-4">
+                      <div className="flex items-center space-x-2">
+                        <FaRegThumbsUp className="text-gray-400" />
+                        <span className="text-gray-300">{query.likes}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">
+                          {new Date(query.createdAt).toLocaleDateString("en-US", {
+                            weekday: "short",
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400">No solved queries found.</p>
+              )}
+            </div>
           </div>
         );
       case "yourQueries":
         return (
           <div>
-            <h2 className="text-xl font-bold text-center">Your Queries</h2>
-            <p className="text-gray-200">This section shows your submitted queries.</p>
-            {/* Display your queries here */}
+          {/* Render queries without a solution */}
+          <div className="space-y-6 mt-6">
+            {yourQueries.length > 0 ? (
+              yourQueries.map((query, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl"
+                >
+                  <h3 className="text-xl font-semibold text-gray-200">
+                    {query.topic}
+                  </h3>
+                  <p className="text-gray-300 mt-2">{query.description}</p>
+                  <div className="flex flex-col flex-wrap gap-4 mt-2 text-sm text-gray-500">
+                    <span className="py-1 ">{query.tags.join(", ")}</span>
+                    <span className="flex items-center">
+                      <FaComment className="inline-block mr-2 text-gray-400" />
+                      Solution:&nbsp;
+                      <span className="bg-gray-700 px-3 py-1 rounded-lg">
+                        {query.solution}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap justify-between items-center mt-4">
+                    <div className="flex items-center space-x-2">
+                      <FaRegThumbsUp className="text-gray-400" />
+                      <span className="text-gray-300">{query.likes}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-500">
+                        {new Date(query.createdAt).toLocaleDateString("en-US", {
+                          weekday: "short",
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400">No queries without a solution found.</p>
+            )}
           </div>
+        </div>
         );
       case "writeQuery":
         return (
@@ -148,7 +297,6 @@ const StudentQueries = () => {
             <h2 className="text-2xl font-bold text-center text-gray-200">
               Write a Query
             </h2>
-
             <div>
               <label
                 htmlFor="topic"
@@ -167,7 +315,6 @@ const StudentQueries = () => {
                 required
               />
             </div>
-
             <div>
               <label
                 htmlFor="tags"
@@ -185,12 +332,7 @@ const StudentQueries = () => {
                 className="w-full px-4 py-2 mt-2 text-gray-300 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 required
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Use <span className="font-semibold">#</span> to create tags and "
-                , " to separate them (e.g., #networking, #database).
-              </p>
             </div>
-
             <div>
               <label
                 htmlFor="query"
@@ -208,7 +350,6 @@ const StudentQueries = () => {
                 required
               />
             </div>
-
             <button
               type="submit"
               className="w-full px-4 py-2 font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
@@ -224,7 +365,6 @@ const StudentQueries = () => {
 
   return (
     <div className="bg-gray-900 min-h-screen text-gray-200">
-      {/* Small Navbar */}
       <nav className="bg-gray-800 p-4 shadow-md">
         <div className="flex flex-wrap justify-center space-x-2 md:space-x-8">
           <button
@@ -269,8 +409,6 @@ const StudentQueries = () => {
           </button>
         </div>
       </nav>
-
-      {/* Content Area */}
       <div className="p-4 md:p-8">{renderContent()}</div>
     </div>
   );
