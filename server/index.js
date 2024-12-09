@@ -70,7 +70,7 @@ app.post('/api/login', async (req, res) => {
 
   try {
     const userIdInt = parseInt(userId, 10);
-    const passwordInt = parseInt(password, 10);
+    const passwordInt = parseInt(password,10);
 
     if (isNaN(userIdInt) || isNaN(passwordInt)) {
       console.log("Invalid userId or password format");
@@ -80,7 +80,7 @@ app.post('/api/login', async (req, res) => {
     // Check student collection
     let user = await studentsCollection.findOne({ RollNo: userIdInt });
     if (user) {
-      if (user.password !== passwordInt) {
+      if (parseInt(user.password) !== passwordInt) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
@@ -102,8 +102,8 @@ app.post('/api/login', async (req, res) => {
     // Check teacher collection
     user = await teachersCollection.findOne({ teacherId: userIdInt });
     if (user) {
-      if (user.password !== passwordInt) {
-        return res.status(401).json({ message: 'Invalid credentials' });
+      if (parseInt(user.password) !== passwordInt) {
+        return res.status(401).json({ message: 'Invalid credentials pass' });
       }
 
       const token = jwt.sign(
@@ -156,6 +156,45 @@ app.get('/api/user-details', authenticateJWT, async (req, res) => {
   } catch (error) {
     console.error('JWT Error:', error.message);
     res.status(500).json({ message: 'Failed to fetch user details' });
+  }
+});
+
+// app.post('/api/post-data-from-token', (req, res) => {
+//   const token = req.body.token; // Assuming token is sent in the body.
+
+//   if (!token) {
+//     return res.status(400).json({ message: 'Token is required' });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     res.json({ message: 'Token decoded successfully', decoded });
+//   } catch (error) {
+//     res.status(400).json({ message: 'Invalid or expired token', error: error.message });
+//   }
+// });
+
+
+
+app.get('/api/post-data-from-token/:token', (req, res) => {
+  const { token } = req.params;
+  const JWT_SECRET = process.env.JWT_SECRET; // Use the secret from the .env file
+
+  if (!token) {
+    return res.status(400).json({ message: 'Token is required' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    res.json({
+      message: 'Token decoded successfully',
+      decoded,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: 'Invalid or expired token',
+      error: error.message,
+    });
   }
 });
 

@@ -11,40 +11,46 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(""); // Reset error message before attempting login
-
+  
     try {
       const response = await fetch("http://localhost:3000/api/login", { // Ensure the port matches your server setup
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: rollNo, password }), // Sending rollNo as userId
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.message || "Login failed");
         return;
       }
-
+  
       const data = await response.json();
-
-      // Store token in cookies (httpOnly cookie will be set by the server)
-      document.cookie = `authToken=${data.token}; path=/; max-age=3600`; // Cookie expires in 1 hour
-
-      // Now redirect based on the role (student or teacher)
-      if (data.role === "student") {
-        // Redirect to student dashboard
-        navigate(`/student/home`);
-      } else if (data.role === "teacher") {
-        // Redirect to teacher dashboard
-        navigate(`/teacher/home`);
+  
+      // Ensure the token is received and store it in localStorage
+      if (data.token) {
+        localStorage.setItem("jwtToken", data.token); // Save token to localStorage
+        console.log("Token saved in localStorage:", data.token);
+  
+        // Now redirect based on the role (student or teacher)
+        if (data.role === "student") {
+          // Redirect to student dashboard
+          navigate(`/student/home`);
+        } else if (data.role === "teacher") {
+          // Redirect to teacher dashboard
+          navigate(`/teacher/home`);
+        } else {
+          setError("User role not found.");
+        }
       } else {
-        setError("User role not found.");
+        setError("No token received from server.");
       }
     } catch (err) {
       console.error("Login error:", err);
       setError("Server error. Please try again later.");
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">

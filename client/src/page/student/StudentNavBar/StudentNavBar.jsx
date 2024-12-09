@@ -1,44 +1,66 @@
-import React, { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import Chitkaralogo from "/chitkaraLogo.jpeg";
+import React, { useState, useEffect } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom"; // Use useNavigate for redirection
+import Chitkaralogo from "/chitkaraLogo.jpeg"; // Adjust the path as needed
 import profile from "/profile.png";
-import ChatBot from "../../../chatbot/ChatBot";
+import ChatBot from "../../../chatbot/ChatBot"; // Adjust the path as needed
 
 const StudentNavBar = () => {
-  const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate(); // Hook to handle redirection
   const [student, setStudent] = useState({
     name: "Loading...", // Default placeholder text
     email: "",
     RollNo: "",
   });
+  const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Fetch user data from the backend
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/user-details", {
-          method: "GET",
-          credentials: "include", // Important to send cookies with the request
+    const token = localStorage.getItem("jwtToken");
+    if (token) {
+      fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status} ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // Extract student data from the decoded object
+          const { name, email, RollNo } = data.decoded;
+
+          setStudent({
+            name,
+            email,
+            RollNo,
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching student data:", error);
+          setStudent({
+            name: "Error fetching data",
+            email: "",
+            RollNo: "",
+          });
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Fetched student data:", data); // Add this log to check data
-          setStudent(data); // Assuming the backend returns { name, email, RollNo }
-        } else {
-          console.error("Failed to fetch user details.");
-        }
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    };
-
-    fetchUserData();
+    }
   }, []);
 
   const toggleProfileDropdown = () => setProfileDropdownOpen(!isProfileDropdownOpen);
   const toggleMobileMenu = () => setMobileMenuOpen(!isMobileMenuOpen);
+
+  // Logout function to remove token and redirect
+  const logout = () => {
+    // Remove JWT token from localStorage
+    localStorage.removeItem("jwtToken");
+
+    // Redirect to the home page (or login page)
+    navigate("/"); // Change "/" to the desired route (e.g., "/login")
+  };
 
   return (
     <nav className="bg-gray-900 text-gray-200 p-4 shadow-lg border-b border-white">
@@ -85,9 +107,9 @@ const StudentNavBar = () => {
                 <Link to="/student/profile" className="block px-4 py-2 text-sm hover:bg-gray-700">
                   View Profile
                 </Link>
-                <Link to="/" className="block px-4 py-2 text-sm hover:bg-gray-700">
+                <button onClick={logout} className="block px-4 py-2 text-sm hover:bg-gray-700">
                   Logout
-                </Link>
+                </button>
               </div>
             )}
           </div>
@@ -107,7 +129,7 @@ const StudentNavBar = () => {
           <NavLink to="/student/help" className="hover:text-[#EB1C24]">Help</NavLink>
         </div>
       )}
-    <ChatBot/>
+      <ChatBot />
     </nav>
   );
 };
