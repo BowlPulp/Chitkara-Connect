@@ -21,7 +21,6 @@ import AddSyllabus from './page/teacher/TeacherSyllabus/AddSyllabus.jsx';
 import StudentPerformance from './page/student/StudentPerformance/StudentPerformance.jsx';
 import StudentAttendance from './page/student/StudentAttendance/StudentAttendance.jsx';
 import TeacherAttendance from './page/teacher/TeacherAttendance/TeacherAttendance.jsx';
-import StudentProfilePage from './page/student/StudentProfilePage/StudentProfilePage.jsx';
 
 const router = createBrowserRouter([
   // Default Login Route
