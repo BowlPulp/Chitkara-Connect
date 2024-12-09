@@ -14,6 +14,7 @@ import StudentNavBar from './page/student/StudentNavBar/StudentNavBar'
 import Footer from './page/footer/Footer'
 import StudentPerformance from './page/student/StudentPerformance/StudentPerformance'
 import StudentProfilePage from './page/student/StudentProfilePage/StudentProfilePage'
+import StudentAttendance from './page/student/StudentAttendance/StudentAttendance'
 
 
 const App = () => {
@@ -30,6 +31,7 @@ const App = () => {
           <Route path="gatepass" element={<StudentGatepass />} />
           <Route path="queries" element={<StudentQueries />} />
           <Route path="performance" element={<StudentPerformance/>} />
+          <Route path="attendance" element={<StudentAttendance/>} />
           <Route path="profile" element={<StudentProfilePage/>} />
         </Route>
 

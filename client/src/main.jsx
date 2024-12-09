@@ -19,12 +19,9 @@ import ContactTeachers from './page/student/ContactTeachers/ContactTeachers.jsx'
 import StudentsSyllabus from './page/student/StudentSyllabus/StudentSyllabus.jsx';
 import AddSyllabus from './page/teacher/TeacherSyllabus/AddSyllabus.jsx';
 import StudentPerformance from './page/student/StudentPerformance/StudentPerformance.jsx';
-<<<<<<< HEAD
-import StudentProfilePage from './page/student/StudentProfilePage/StudentProfilePage.jsx';
-=======
 import StudentAttendance from './page/student/StudentAttendance/StudentAttendance.jsx';
 import TeacherAttendance from './page/teacher/TeacherAttendance/TeacherAttendance.jsx';
->>>>>>> 13e67dfbb5bd9b38f7ff00d570bb18aa4a9c527c
+import StudentProfilePage from './page/student/StudentProfilePage/StudentProfilePage.jsx';
 
 const router = createBrowserRouter([
   // Default Login Route
@@ -73,13 +70,12 @@ const router = createBrowserRouter([
         element: <StudentPerformance/>
       },
       {
-<<<<<<< HEAD
-        path: 'profile',
-        element:<StudentProfilePage/>
-=======
         path: 'attendance',
         element: <StudentAttendance/>
->>>>>>> 13e67dfbb5bd9b38f7ff00d570bb18aa4a9c527c
+      },
+      {
+        path: 'profile',
+        element: <StudentProfilePage/>
       },
     ]
   },
