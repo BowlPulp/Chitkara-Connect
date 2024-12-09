@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import StudentNavBar from './page/student/studentNavBar/studentNavBar';
+import StudentNavBar from './page/student/StudentNavBar/StudentNavBar';
 
 const StudentLayout = () => {
   return (

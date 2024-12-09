@@ -19,6 +19,7 @@ import ContactTeachers from './page/student/ContactTeachers/ContactTeachers.jsx'
 import StudentsSyllabus from './page/student/StudentSyllabus/StudentSyllabus.jsx';
 import AddSyllabus from './page/teacher/TeacherSyllabus/AddSyllabus.jsx';
 import StudentPerformance from './page/student/StudentPerformance/StudentPerformance.jsx';
+import StudentProfilePage from './page/student/StudentProfilePage/StudentProfilePage.jsx';
 
 const router = createBrowserRouter([
   // Default Login Route
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
       {
         path: 'performance',
         element: <StudentPerformance/>
+      },
+      {
+        path: 'profile',
+        element:<StudentProfilePage/>
       },
     ]
   },

@@ -13,6 +13,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import StudentNavBar from './page/student/StudentNavBar/StudentNavBar'
 import Footer from './page/footer/Footer'
 import StudentPerformance from './page/student/StudentPerformance/StudentPerformance'
+import StudentProfilePage from './page/student/StudentProfilePage/StudentProfilePage'
 
 
 const App = () => {
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="gatepass" element={<StudentGatepass />} />
           <Route path="queries" element={<StudentQueries />} />
           <Route path="performance" element={<StudentPerformance/>} />
+          <Route path="profile" element={<StudentProfilePage/>} />
         </Route>
 
         {/* Teacher routes */}
