@@ -12,6 +12,7 @@ import TeacherNoticeCreate from './page/teacher/TeacherHome/TeacherNoticeCreate'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import StudentNavBar from './page/student/StudentNavBar/StudentNavBar'
 import Footer from './page/footer/Footer'
+import StudentPerformance from './page/student/StudentPerformance/StudentPerformance'
 
 
 const App = () => {
@@ -27,6 +28,7 @@ const App = () => {
           <Route path="home" element={<StudentHome />} />
           <Route path="gatepass" element={<StudentGatepass />} />
           <Route path="queries" element={<StudentQueries />} />
+          <Route path="performance" element={<StudentPerformance/>} />
         </Route>
 
         {/* Teacher routes */}

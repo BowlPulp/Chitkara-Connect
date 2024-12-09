@@ -43,7 +43,7 @@ const StudentsSyllabus = () => {
         placeholder="Search by course name..."
         value={searchTerm}
         onChange={handleSearch}
-        className="w-full p-3 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+        className="w-full p-3 mb-6 border bg-gray-900 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
       />
 
       {filteredSyllabus.length > 0 ? (

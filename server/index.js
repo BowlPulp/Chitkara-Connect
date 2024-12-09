@@ -24,7 +24,8 @@ let studentsCollection;
 let teachersCollection;
 let adminsCollection;
 let noticesCollection;
-let gatepassCollection
+let gatepassCollection;
+let performanceCollection
 
 async function run() {
   try {
@@ -34,7 +35,8 @@ async function run() {
     teachersCollection = db.collection('teachers');
     adminsCollection = db.collection('admins');
     noticesCollection = db.collection('notices');  // Add notices collection
-    gatepassCollection = db.collection('gatepass')
+    gatepassCollection = db.collection('gatepass');
+    performanceCollection = db.collection('performance');
     console.log("Connected to MongoDB and ready to handle requests!");
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
@@ -159,20 +161,6 @@ app.get('/api/user-details', authenticateJWT, async (req, res) => {
   }
 });
 
-// app.post('/api/post-data-from-token', (req, res) => {
-//   const token = req.body.token; // Assuming token is sent in the body.
-
-//   if (!token) {
-//     return res.status(400).json({ message: 'Token is required' });
-//   }
-
-//   try {
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     res.json({ message: 'Token decoded successfully', decoded });
-//   } catch (error) {
-//     res.status(400).json({ message: 'Invalid or expired token', error: error.message });
-//   }
-// });
 
 
 
@@ -198,6 +186,33 @@ app.get('/api/post-data-from-token/:token', (req, res) => {
   }
 });
 
+
+
+// Fetch Student Performance based on RollNo
+// API to fetch performance data by RollNo
+app.get('/api/performance/:rollNo', async (req, res) => {
+  const { rollNo } = req.params; // Extract RollNo from the URL parameter
+
+  if (!rollNo) {
+    return res.status(400).json({ message: 'RollNo is required' });
+  }
+
+  try {
+    // Query the performanceCollection using the RollNo
+    const performanceData = await performanceCollection.find({ RollNo: parseInt(rollNo) }).toArray(); // Correcting the query and using `toArray()` for MongoDB
+
+    // If no data is found, return a 404 response
+    if (performanceData.length === 0) { // Checking the length of the result array
+      return res.status(404).json({ message: `No performance data found for RollNo: ${rollNo}` });
+    }
+
+    // Return the performance data as JSON response
+    res.json(performanceData);
+  } catch (error) {
+    console.error('Error fetching performance data:', error);
+    res.status(500).json({ message: 'Error fetching performance data' });
+  }
+});
 
 
 // POST route to create a notice
