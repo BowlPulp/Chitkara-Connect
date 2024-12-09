@@ -134,8 +134,8 @@ const StudentPerformance = () => {
                 <td className="py-2">{sem4SGPA}</td>
               </tr>
               <tr className="border-b border-gray-700">
-                <td className="py-2 font-semibold text-lg text-red-600">CGPA:</td>
-                <td className="py-2 font-bold text-lg text-red-600">{CGPA}</td>
+                <td className="py-2 font-semibold text-lg">CGPA:</td>
+                <td className="py-2 font-bold text-lg">{CGPA}</td>
               </tr>
             </tbody>
           </table>

@@ -25,7 +25,8 @@ let teachersCollection;
 let adminsCollection;
 let noticesCollection;
 let gatepassCollection;
-let performanceCollection
+let performanceCollection;
+let attendanceCollection;
 
 async function run() {
   try {
@@ -37,6 +38,7 @@ async function run() {
     noticesCollection = db.collection('notices');  // Add notices collection
     gatepassCollection = db.collection('gatepass');
     performanceCollection = db.collection('performance');
+    attendanceCollection = db.collection('attendance');
     console.log("Connected to MongoDB and ready to handle requests!");
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
@@ -672,6 +674,94 @@ app.post('/api/support-add', async (req, res) => {
     res.status(500).json({ message: 'Failed to add support request. Please try again.' });
   }
 });
+
+
+app.get('/api/students', async (req, res) => {
+  try {
+    // Fetch only `RollNo` and `name` fields from the database
+    const students = await studentsCollection.find({}, { projection: { name: 1, RollNo: 1, group:1, _id: 0 } }).toArray();
+    res.status(200).json(students);
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    res.status(500).json({ error: 'Failed to fetch students' });
+  }
+});
+
+// Corrected route definition
+app.get('/api/attendance/:rollNo', async (req, res) => {
+  const { rollNo } = req.params;  // Use rollNo here
+
+  try {
+    // Query attendance collection for records with the provided rollNo
+    const attendanceRecords = await attendanceCollection
+      .find({ studentId: rollNo }) // Change from studentId to rollNo
+      .sort({ date: 1 }) // Sort by date if necessary
+      .toArray();
+
+    if (attendanceRecords.length === 0) {
+      return res.status(404).json({ message: 'No attendance records found for this student' });
+    }
+
+    res.status(200).json(attendanceRecords);
+  } catch (error) {
+    console.error('Error fetching attendance records:', error);
+    res.status(500).json({ error: 'Failed to fetch attendance records' });
+  }
+});
+
+
+// Mark attendance for a specific date
+app.post('/api/mark-attendance', async (req, res) => {
+  const { date, attendanceRecords } = req.body;
+
+  // Validate input
+  if (!date || !Array.isArray(attendanceRecords) || attendanceRecords.length === 0) {
+    return res.status(400).json({ error: 'Invalid input format. "date" and "attendanceRecords" are required.' });
+  }
+
+  try {
+    // Log the incoming request data for debugging purposes
+    console.log('Received attendance data:', attendanceRecords);
+
+    // Format the date to a consistent format (YYYY-MM-DD)
+    const formattedDate = new Date(date).toISOString().split('T')[0];  // 'YYYY-MM-DD'
+    
+    // Ensure each record is valid
+    const formattedRecords = attendanceRecords.map(record => {
+      if (!record.studentId) {
+        throw new Error('Each attendance record must have a valid studentId and status (present/absent)');
+      }
+
+      return {
+        studentId: record.studentId,  // Ensure studentId is correct
+        status: record.status,         // Ensure status is provided (Present/Absent)
+        date: formattedDate,           // Attach the formatted date to each record
+      };
+    });
+
+    // Create bulk operations to update or insert attendance records
+    const bulkOperations = formattedRecords.map(record => ({
+      updateOne: {
+        filter: { studentId: record.studentId, date: record.date },
+        update: { $set: { status: record.status } },
+        upsert: true, // Create a new record if none exists
+      },
+    }));
+
+    // Execute bulkWrite to update attendance in the database
+    const result = await attendanceCollection.bulkWrite(bulkOperations);
+
+    // Send a success response with the result of the bulk operation
+    res.status(200).json({ message: 'Attendance marked successfully', result });
+  } catch (error) {
+    // Log the error for debugging purposes
+    console.error('Error marking attendance:', error);
+
+    // Return a detailed error response
+    res.status(500).json({ error: error.message || 'Failed to mark attendance' });
+  }
+});
+
 
 
 
