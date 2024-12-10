@@ -28,6 +28,7 @@ let gatepassCollection;
 let performanceCollection;
 let attendanceCollection;
 let queryCollection;
+let supportCollection;
 
 async function run() {
   try {
@@ -40,7 +41,8 @@ async function run() {
     gatepassCollection = db.collection('gatepass');
     performanceCollection = db.collection('performance');
     attendanceCollection = db.collection('attendance');
-    queryCollection = db.collection('queries')
+    queryCollection = db.collection('queries');
+    supportCollection = db.collection(`support`);
     console.log("Connected to MongoDB and ready to handle requests!");
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
@@ -76,7 +78,7 @@ app.post('/api/login', async (req, res) => {
 
   try {
     const userIdInt = parseInt(userId, 10);
-    const passwordInt = parseInt(password,10);
+    const passwordInt = parseInt(password, 10);
 
     if (isNaN(userIdInt) || isNaN(passwordInt)) {
       console.log("Invalid userId or password format");
@@ -91,7 +93,7 @@ app.post('/api/login', async (req, res) => {
       }
 
       const token = jwt.sign(
-        { userId: user._id, role: 'student', RollNo: user.RollNo, name: user.name ,email:user.email},
+        { userId: user._id, role: 'student', RollNo: user.RollNo, name: user.name , email: user.email },
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
       );
@@ -113,7 +115,7 @@ app.post('/api/login', async (req, res) => {
       }
 
       const token = jwt.sign(
-        { userId: user._id, role: 'teacher', teacherId: user.teacherId, name: user.name , email:user.email},
+        { userId: user._id, role: 'teacher', teacherId: user.teacherId, name: user.name , email: user.email },
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
       );
@@ -127,6 +129,29 @@ app.post('/api/login', async (req, res) => {
       return res.json({ token, role: 'teacher' });
     }
 
+    // Check admin collection
+    user = await adminsCollection.findOne({ adminId: userIdInt });
+    if (user) {
+      if (parseInt(user.password) !== passwordInt) {
+        return res.status(401).json({ message: 'Invalid admin credentials' });
+      }
+
+      const token = jwt.sign(
+        { userId: user._id, role: 'admin', adminId: user.adminId, name: user.name , email: user.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+
+      res.cookie('authToken', token, {
+        httpOnly: true,
+        secure: false, // Set to true for production with HTTPS
+        maxAge: 3600000 // 1 hour
+      });
+
+      return res.json({ token, role: 'admin' });
+    }
+
+    // If no user is found in students, teachers, or admins collections
     return res.status(401).json({ message: 'User not found' });
 
   } catch (error) {
@@ -878,8 +903,105 @@ app.get('/api/students-performance', async (req, res) => {
   }
 });
 
+//////// ADMIN PANEL ///////
+app.get('/api/students/count', async (req, res) => {
+  try {
+    const studentCount = await studentsCollection.countDocuments();
+    res.json({ count: studentCount });
+  } catch (error) {
+    console.error('Error fetching student count:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/api/teachers/count', async (req, res) => {
+  try {
+    // Assuming `teachersCollection` is already initialized elsewhere in your code
+    const teacherCount = await teachersCollection.countDocuments();
+    res.json({ count: teacherCount });
+  } catch (error) {
+    console.error('Error fetching teacher count:', error); // Fixed the error message
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/api/notices/count', async (req, res) => {
+  try {
+    // Assuming `teachersCollection` is already initialized elsewhere in your code
+    const noticeCount = await noticesCollection.countDocuments();
+    res.json({ count: noticeCount });
+  } catch (error) {
+    console.error('Error fetching teacher count:', error); // Fixed the error message
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/api/queries/count', async (req, res) => {
+  try {
+    // Assuming `teachersCollection` is already initialized elsewhere in your code
+    const queriesCount = await queryCollection.countDocuments();
+    res.json({ count: queriesCount });
+  } catch (error) {
+    console.error('Error fetching teacher count:', error); // Fixed the error message
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/api/support/count', async (req, res) => {
+  try {
+    // Assuming `teachersCollection` is already initialized elsewhere in your code
+    const supportCount = await supportCollection.countDocuments();
+    res.json({ count: supportCount });
+  } catch (error) {
+    console.error('Error fetching teacher count:', error); // Fixed the error message
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+/// MANAGE TEACHERS ///
+app.get('/api/teachers', async (req, res) => {
+  try {
+    const teachers = await teachersCollection.find().toArray();
+    res.json(teachers);
+  } catch (error) {
+    console.error('Error fetching teachers:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+/// MANAGE STUDENTS ///
+app.get('/api/student', async (req, res) => {
+  try {
+    const student = await studentsCollection.find().toArray();
+    res.json(student);
+  } catch (error) {
+    console.error('Error fetching teachers:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 
+/// MANAGE HELP/ SUPPORT ///
+app.get('/api/supports', async (req, res) => {
+  try {
+    const support = await supportCollection.find().toArray();
+    res.json(support);
+  } catch (error) {
+    console.error('Error fetching support:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+/// MANAGE QUERIES ///
+app.get('/api/queries', async (req, res) => {
+  try {
+    const queries = await queryCollection.find().toArray();
+    res.json(queries);
+  } catch (error) {
+    console.error('Error fetching support:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

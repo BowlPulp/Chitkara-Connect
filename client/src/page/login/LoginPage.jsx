@@ -39,7 +39,11 @@ const LoginPage = () => {
         } else if (data.role === "teacher") {
           // Redirect to teacher dashboard
           navigate(`/teacher/home`);
-        } else {
+        }  else if (data.role === "admin") {
+          // Redirect to teacher dashboard
+          navigate(`/admin/home`);
+        }
+        else {
           setError("User role not found.");
         }
       } else {

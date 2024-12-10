@@ -23,6 +23,14 @@ import StudentAttendance from './page/student/StudentAttendance/StudentAttendanc
 import TeacherAttendance from './page/teacher/TeacherAttendance/TeacherAttendance.jsx';
 import StudentProfilePage from './page/student/StudentProfilePage/StudentProfilePage.jsx';
 import TeacherPerformance from './page/teacher/TeacherPerformance/TeacherPerformance.jsx';
+import AdminLayout from './AdminLayout.jsx';
+import AdminHome from './page/admin/AdminHome/AdminHome.jsx';
+import AdminStudents from './page/admin/AdminManageStudents.jsx/AdminManageStudents.jsx';
+import AdminSyllabus from './page/admin/AdminSyllabus/AdminSyllabus.jsx';
+import AdminManageTeachers from './page/admin/AdminManageTeachers/AdminManageTeachers.jsx';
+import AdminManageStudents from './page/admin/AdminManageStudents.jsx/AdminManageStudents.jsx';
+import AdminQueries from './page/admin/AdminQueries/AdminQueries.jsx';
+import AdminHelp from './page/admin/AdminHelp/AdminHelp.jsx';
 
 const router = createBrowserRouter([
   // Default Login Route
@@ -113,6 +121,32 @@ const router = createBrowserRouter([
       {
         path: 'performance',
         element: <TeacherPerformance />
+      },
+    ]
+  },
+  {
+    path: '/admin/', // Correct dynamic path
+    element: <AdminLayout />,
+    children: [
+      {
+        path: 'home',
+        element: <AdminHome />
+      },
+      {
+        path: 'manage-teachers',
+        element: <AdminManageTeachers />
+      },
+      {
+        path: 'manage-students',
+        element: <AdminManageStudents />
+      },
+      {
+        path: 'queries',
+        element: <AdminQueries/>
+      },
+      {
+        path: 'help',
+        element: <AdminHelp/>
       },
     ]
   }
