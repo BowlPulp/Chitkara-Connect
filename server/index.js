@@ -216,6 +216,32 @@ app.get('/api/student-details/:rollNo', async (req, res) => {
 });
 
 
+// API to fetch teacher details by teacherId
+app.get('/api/teacher-details/:teacherId', async (req, res) => {
+  const { teacherId } = req.params; // Extract teacherId from the URL parameter
+
+  if (!teacherId) {
+    return res.status(400).json({ message: 'TeacherId is required' });
+  }
+
+  try {
+    // Fetch the teacher's details from the collection using the teacherId
+    const teacherData = await teachersCollection.findOne({ teacherId: parseInt(teacherId, 10) });
+
+    if (!teacherData) {
+      return res.status(404).json({ message: `No teacher found with TeacherId: ${teacherId}` });
+    }
+
+    // Return the teacher's details
+    res.status(200).json(teacherData);
+  } catch (error) {
+    console.error('Error fetching teacher details:', error);
+    res.status(500).json({ message: 'Error fetching teacher details' });
+  }
+});
+
+
+
 
 // Fetch Student Performance based on RollNo
 // API to fetch performance data by RollNo
