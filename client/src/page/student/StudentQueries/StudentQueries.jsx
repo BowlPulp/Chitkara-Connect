@@ -16,6 +16,7 @@ const StudentQueries = () => {
   const [queries, setQueries] = useState([]); // State to hold queries without solution
   const [solvedQueries, setSolvedQueries] = useState([]); // State to hold solved queries
   const [yourQueries, setYourQueries] = useState([]);
+  const [queryFilter, setQueryFilter] = useState("all");
   // Fetch user data when component mounts
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
@@ -239,7 +240,94 @@ useEffect(() => {
             </div>
           </div>
         );
-      case "yourQueries":
+        case "yourQueries":
+          // Filter queries based on selected filter
+          const filteredQueries =
+            queryFilter === "all"
+              ? yourQueries
+              : queryFilter === "solved"
+              ? yourQueries.filter((query) => query.solution !== "null")
+              : yourQueries.filter((query) => query.solution === "null");
+    
+          return (
+            <div>
+              <div className="flex justify-center space-x-4 my-4">
+                <button
+                  onClick={() => setQueryFilter("all")}
+                  className={`px-4 py-2 font-semibold rounded-md ${
+                    queryFilter === "all"
+                      ? "bg-red-600 text-white"
+                      : "hover:text-red-400 text-gray-400"
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => setQueryFilter("solved")}
+                  className={`px-4 py-2 font-semibold rounded-md ${
+                    queryFilter === "solved"
+                      ? "bg-red-600 text-white"
+                      : "hover:text-red-400 text-gray-400"
+                  }`}
+                >
+                  Solved
+                </button>
+                <button
+                  onClick={() => setQueryFilter("unsolved")}
+                  className={`px-4 py-2 font-semibold rounded-md ${
+                    queryFilter === "unsolved"
+                      ? "bg-red-600 text-white"
+                      : "hover:text-red-400 text-gray-400"
+                  }`}
+                >
+                  Unsolved
+                </button>
+              </div>
+              <div className="space-y-6 mt-6">
+                {filteredQueries.length > 0 ? (
+                  filteredQueries.map((query, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl"
+                    >
+                      <h3 className="text-xl font-semibold text-gray-200">
+                        {query.topic}
+                      </h3>
+                      <p className="text-gray-300 mt-2">{query.description}</p>
+                      <div className="flex flex-col flex-wrap gap-4 mt-2 text-sm text-gray-500">
+                        <span className="py-1 ">{query.tags.join(", ")}</span>
+                        <span className="flex items-center">
+                          <FaComment className="inline-block mr-2 text-gray-400" />
+                          Solution:&nbsp;
+                          <span className="bg-gray-700 px-3 py-1 rounded-lg">
+                            {query.solution}
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap justify-between items-center mt-4">
+                        <div className="flex items-center space-x-2">
+                          <FaRegThumbsUp className="text-gray-400" />
+                          <span className="text-gray-300">{query.likes}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-500">
+                            {new Date(query.createdAt).toLocaleDateString("en-US", {
+                              weekday: "short",
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400">No queries found for this filter.</p>
+                )}
+              </div>
+            </div>
+          );
         return (
           <div>
           {/* Render queries without a solution */}
