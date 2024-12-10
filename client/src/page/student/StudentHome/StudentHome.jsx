@@ -9,6 +9,7 @@ const StudentHome = () => {
   const [mentorNotices, setMentorNotices] = useState([]); // State for mentor notices
   const [notices, setNotices] = useState([]);  // State for notices
   const [loading, setLoading] = useState(true);  // Loading state to show loading spinner
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   // Function to fetch events, mentor notices, and notices data
   const fetchData = async () => {
     try {
