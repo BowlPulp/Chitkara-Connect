@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const TeacherNoticeCreate = () => {
   const [activeTab, setActiveTab] = useState("createMentorNotice");
   const [loading, setLoading] = useState(false); // Define loading state
-
+  const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
   const [mentorNotice, setMentorNotice] = useState({
     teacherName: "",
     email: "",
@@ -65,7 +65,7 @@ const TeacherNoticeCreate = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/create-notice', {
+      const response = await fetch(`${apiBaseUrl}/api/create-notice`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

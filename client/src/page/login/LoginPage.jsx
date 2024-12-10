@@ -3,47 +3,43 @@ import { useNavigate } from "react-router-dom";
 import chitkaraLogo from "../../assets/chitkaraLogo.jpeg"; // Adjust the path as needed
 
 const LoginPage = () => {
-  const [rollNo, setRollNo] = useState(""); // changed to lowercase variable name
+  const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
+  const [rollNo, setRollNo] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(""); // Reset error message before attempting login
-  
+
     try {
-      const response = await fetch("http://localhost:3000/api/login", { // Ensure the port matches your server setup
+      const response = await fetch(`${apiBaseUrl}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: rollNo, password }), // Sending rollNo as userId
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.message || "Login failed");
         return;
       }
-  
+
       const data = await response.json();
-  
+
       // Ensure the token is received and store it in localStorage
       if (data.token) {
         localStorage.setItem("jwtToken", data.token); // Save token to localStorage
         console.log("Token saved in localStorage:", data.token);
-  
-        // Now redirect based on the role (student or teacher)
+
+        // Redirect based on the role
         if (data.role === "student") {
-          // Redirect to student dashboard
           navigate(`/student/home`);
         } else if (data.role === "teacher") {
-          // Redirect to teacher dashboard
           navigate(`/teacher/home`);
-        }  else if (data.role === "admin") {
-          // Redirect to teacher dashboard
+        } else if (data.role === "admin") {
           navigate(`/admin/home`);
-        }
-        else {
+        } else {
           setError("User role not found.");
         }
       } else {
@@ -54,7 +50,6 @@ const LoginPage = () => {
       setError("Server error. Please try again later.");
     }
   };
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">

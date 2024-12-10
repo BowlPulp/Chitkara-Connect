@@ -6,12 +6,12 @@ const ManageStudents = () => {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState('');
-
+  const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
   // Fetch student details from the backend
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/manage-students');
+        const response = await axios.get(`${apiBaseUrl}/api/manage-students`);
         setStudents(response.data); // Set the fetched students data in state
         setFilteredStudents(response.data); // Initially, show all students
         setLoading(false); // Set loading to false after data is fetched

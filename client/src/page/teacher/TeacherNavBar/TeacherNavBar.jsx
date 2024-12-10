@@ -12,11 +12,11 @@ const TeacherNavBar = () => {
   const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate(); // Hook for redirection
-
+  const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
-      fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
+      fetch(`${apiBaseUrl}/api/post-data-from-token/${token}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`, // Add Authorization header

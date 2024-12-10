@@ -6,13 +6,13 @@ const TeacherGatepass = () => {
     const [approvedGatepasses, setApprovedGatepasses] = useState([]);
     const [rejectedGatepasses, setRejectedGatepasses] = useState([]);
     const [loading, setLoading] = useState(true);
-  
+    const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
     useEffect(() => {
       const fetchGatepasses = async () => {
         try {
-          const pendingResponse = await fetch("http://localhost:3000/api/gatepasses/pending");
-          const approvedResponse = await fetch("http://localhost:3000/api/gatepasses/approved");
-          const rejectedResponse = await fetch("http://localhost:3000/api/gatepasses/rejected");
+          const pendingResponse = await fetch(`${apiBaseUrl}/api/gatepasses/pending`);
+          const approvedResponse = await fetch(`${apiBaseUrl}/api/gatepasses/approved`);
+          const rejectedResponse = await fetch(`${apiBaseUrl}/api/gatepasses/rejected`);
   
           if (pendingResponse.ok) {
             const pendingData = await pendingResponse.json();
@@ -38,7 +38,7 @@ const TeacherGatepass = () => {
   
     const updateGatepassStatus = async (id, status) => {
       try {
-        const response = await fetch("http://localhost:3000/api/gatepasses/update-status", {
+        const response = await fetch(`${apiBaseUrl}/api/gatepasses/update-status`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

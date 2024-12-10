@@ -381,6 +381,7 @@ app.post('/api/logout', (req, res) => {
   return res.status(200).json({ message: 'Logged out successfully' });
 });
 
+// questions list
 const questions = [
   {
     id: 1,

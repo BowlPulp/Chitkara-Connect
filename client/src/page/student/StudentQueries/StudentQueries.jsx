@@ -17,12 +17,12 @@ const StudentQueries = () => {
   const [solvedQueries, setSolvedQueries] = useState([]); // State to hold solved queries
   const [yourQueries, setYourQueries] = useState([]);
   const [queryFilter, setQueryFilter] = useState("all");
-
+  const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
   // Fetch user data when component mounts
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
-      fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
+      fetch(`${apiBaseUrl}/api/post-data-from-token/${token}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -52,7 +52,7 @@ const StudentQueries = () => {
 
   // Fetch queries without solution
   useEffect(() => {
-    fetch("http://localhost:3000/api/queries-without-solution")
+    fetch(`${apiBaseUrl}/api/queries-without-solution`)
       .then((response) => response.json())
       .then((data) => {
         setQueries(data.queries || []); // Update state with fetched queries
@@ -64,7 +64,7 @@ const StudentQueries = () => {
 
   // Fetch solved queries
   useEffect(() => {
-    fetch("http://localhost:3000/api/queries-with-solution")
+    fetch(`${apiBaseUrl}/api/queries-with-solution`)
       .then((response) => response.json())
       .then((data) => {
         setSolvedQueries(data.queries || []); // Update state with fetched solved queries
@@ -75,18 +75,19 @@ const StudentQueries = () => {
   }, [activeTab]);
 
   // Fetch queries specific to the logged-in user's roll number
-  useEffect(() => {
-    if (userData.rollNo) {
-      fetch(`http://localhost:3000/api/queries-by-rollno/${userData.rollNo}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setYourQueries(data.queries || []); // Update state with fetched queries
-        })
-        .catch((error) => {
-          console.error("Error fetching queries by rollNo:", error);
-        });
-    }
-  }, [userData.rollNo]); // Trigger this effect when rollNo changes
+useEffect(() => {
+  if (userData.rollNo) {
+    fetch(`${apiBaseUrl}/api/queries-by-rollno/${userData.rollNo}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setYourQueries(data.queries); // Update state with fetched queries
+      })
+      .catch((error) => {
+        console.error("Error fetching queries by rollNo:", error);
+      });
+  }
+}, [userData.rollNo]); // Trigger this effect when rollNo changes
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -114,7 +115,7 @@ const StudentQueries = () => {
       solution: "null",
     };
 
-    fetch("http://localhost:3000/api/submit-query", {
+    fetch(`${apiBaseUrl}/api/submit-query`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
