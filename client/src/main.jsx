@@ -33,6 +33,7 @@ import AdminManageTeachers from './page/admin/AdminManageTeachers/AdminManageTea
 import AdminManageStudents from './page/admin/AdminManageStudents.jsx/AdminManageStudents.jsx';
 import AdminQueries from './page/admin/AdminQueries/AdminQueries.jsx';
 import AdminHelp from './page/admin/AdminHelp/AdminHelp.jsx';
+import ManageQueries from './page/teacher/ManageQueries/ManageQueries.jsx';
 
 const router = createBrowserRouter([
   // Default Login Route
@@ -132,6 +133,10 @@ const router = createBrowserRouter([
       {
         path: 'gatepass',
         element: <TeacherGatepass/>
+      },
+      {
+        path: 'queries',
+        element: <ManageQueries/>
       },
     ]
   },

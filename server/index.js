@@ -1004,6 +1004,38 @@ app.get('/api/queries-by-rollno/:rollNo', async (req, res) => {
 });
 
 
+app.put('/api/queries/update-solution', async (req, res) => {
+  const { queryId, solution } = req.body;
+
+  if (!queryId || typeof solution !== 'string') {
+    return res.status(400).json({ message: 'Invalid input. queryId and solution are required.' });
+  }
+
+  try {
+    // Update the solution for the given query ID
+    const result = await queryCollection.updateOne(
+      { _id: new ObjectId(queryId) }, // Ensure _id matches the queryId
+      { $set: { solution: solution } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Query not found.' });
+    }
+
+    if (result.modifiedCount === 0) {
+      return res.status(400).json({ message: 'Solution was not updated.' });
+    }
+
+    // Respond with success message
+    res.status(200).json({ message: 'Solution updated successfully.' });
+  } catch (error) {
+    console.error('Error updating solution:', error);
+    res.status(500).json({ message: 'Failed to update solution. Please try again later.' });
+  }
+});
+
+
+
 
 app.get('/api/students-performance', async (req, res) => {
   try {
