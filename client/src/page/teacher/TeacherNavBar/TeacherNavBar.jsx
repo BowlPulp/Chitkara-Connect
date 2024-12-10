@@ -88,7 +88,6 @@ const TeacherNavBar = () => {
           <Link to="/teacher/attendance" className="hover:text-[#EB1C24]">Attendance</Link>
           <Link to="/teacher/gatepass" className="hover:text-[#EB1C24]">Gatepass</Link>
           <Link to="/teacher/queries" className="hover:text-[#EB1C24]">Queries</Link>
-          <Link to="/teacher/problems" className="hover:text-[#EB1C24]">Student Problems</Link>
           <Link to="/teacher/manage" className="hover:text-[#EB1C24]">Manage Students</Link>
           <Link to="/teacher/help" className="hover:text-[#EB1C24]">Help</Link>
         </div>
@@ -149,7 +148,6 @@ const TeacherNavBar = () => {
           <Link to="/teacher/attendance" className="hover:text-[#EB1C24]">Attendance</Link>
           <Link to="/teacher/gatepass" className="hover:text-[#EB1C24]">Gatepass</Link>
           <Link to="/teacher/queries" className="hover:text-[#EB1C24]">Queries</Link>
-          <Link to="/teacher/problems" className="hover:text-[#EB1C24]">Student Problems</Link>
           <Link to="/teacher/manage" className="hover:text-[#EB1C24]">Manage Students</Link>
           <Link to="/teacher/help" className="hover:text-[#EB1C24]">Help</Link>
         </div>
