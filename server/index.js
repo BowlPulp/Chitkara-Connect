@@ -5,6 +5,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
+const ObjectId = require('mongodb').ObjectId;
 
 
 
@@ -622,6 +623,92 @@ app.get('/api/gatepasses/pending/:rollNo', async (req, res) => {
     res.status(500).json({ message: 'Error fetching pending gatepasses' });
   }
 });
+
+app.get('/api/gatepasses/pending', async (req, res) => {
+  try {
+    // Query the gatepass collection for pending gatepasses
+    const pendingGatepasses = await gatepassCollection.find({ approvedStatus: 'pending' }).toArray();
+
+    // Return the pending gatepasses as JSON response
+    if (pendingGatepasses.length === 0) {
+      return res.status(404).json({ message: 'No pending gatepasses found' });
+    }
+
+    res.json(pendingGatepasses);
+  } catch (error) {
+    console.error('Error fetching pending gatepasses:', error);
+    res.status(500).json({ message: 'Error fetching pending gatepasses' });
+  }
+});
+
+
+
+app.get('/api/gatepasses/approved', async (req, res) => {
+  try {
+    // Query the gatepass collection for approved gatepasses
+    const approvedGatepasses = await gatepassCollection.find({ approvedStatus: 'approved' }).toArray();
+
+    // Return the approved gatepasses as JSON response
+    if (approvedGatepasses.length === 0) {
+      return res.status(404).json({ message: 'No approved gatepasses found' });
+    }
+
+    res.json(approvedGatepasses);
+  } catch (error) {
+    console.error('Error fetching approved gatepasses:', error);
+    res.status(500).json({ message: 'Error fetching approved gatepasses' });
+  }
+});
+
+
+app.get('/api/gatepasses/rejected', async (req, res) => {
+  try {
+    // Query the gatepass collection for rejected gatepasses
+    const rejectedGatepasses = await gatepassCollection.find({ approvedStatus: 'rejected' }).toArray();
+
+    // Return the rejected gatepasses as JSON response
+    if (rejectedGatepasses.length === 0) {
+      return res.status(404).json({ message: 'No rejected gatepasses found' });
+    }
+
+    res.json(rejectedGatepasses);
+  } catch (error) {
+    console.error('Error fetching rejected gatepasses:', error);
+    res.status(500).json({ message: 'Error fetching rejected gatepasses' });
+  }
+});
+
+
+// API to update the approved status of a gate pass
+app.put('/api/gatepasses/update-status', async (req, res) => {
+  const { gatepassId, approvedStatus } = req.body; // Extract gatepassId and new approvedStatus from request body
+
+  // Validate input
+  if (!gatepassId || !approvedStatus) {
+    return res.status(400).json({ message: 'gatepassId and approvedStatus are required' });
+  }
+
+  try {
+    // Update the approvedStatus of the specified gate pass in the collection
+    const result = await gatepassCollection.updateOne(
+      { _id: new ObjectId(gatepassId) }, // Filter by gatepassId
+      { $set: { approvedStatus } } // Update approvedStatus
+    );
+
+    // If no documents were modified, return a not found response
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: `No gate pass found with ID: ${gatepassId}` });
+    }
+
+    // Return success response
+    res.json({ message: 'Gate pass status updated successfully' });
+  } catch (error) {
+    console.error('Error updating gate pass status:', error);
+    res.status(500).json({ message: 'Error updating gate pass status' });
+  }
+});
+
+
 
 
 app.post('/api/syllabus-add', async (req, res) => {

@@ -24,6 +24,7 @@ import TeacherAttendance from './page/teacher/TeacherAttendance/TeacherAttendanc
 import StudentProfilePage from './page/student/StudentProfilePage/StudentProfilePage.jsx';
 import TeacherPerformance from './page/teacher/TeacherPerformance/TeacherPerformance.jsx';
 import TeacherProfilePage from './page/teacher/TeacherProfilePage/TeacherProfilePage.jsx';
+import TeacherGatepass from './page/teacher/TeacherGatepass/TeacherGatepass.jsx';
 
 const router = createBrowserRouter([
   // Default Login Route
@@ -119,6 +120,10 @@ const router = createBrowserRouter([
       {
         path: 'profile',
         element: <TeacherProfilePage/>
+      },
+      {
+        path: 'gatepass',
+        element: <TeacherGatepass/>
       },
     ]
   }
