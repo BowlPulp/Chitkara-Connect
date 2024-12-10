@@ -7,11 +7,11 @@ const StudentPerformance = () => {
   const [performanceData, setPerformanceData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
-      fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
+      fetch(`${apiBaseUrl}/api/post-data-from-token/${token}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -37,7 +37,7 @@ const StudentPerformance = () => {
 
   useEffect(() => {
     if (student.RollNo) {
-      fetch(`http://localhost:3000/api/performance/${student.RollNo}`)
+      fetch(`${apiBaseUrl}/api/performance/${student.RollNo}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`Error: ${response.status} ${response.statusText}`);

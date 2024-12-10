@@ -9,12 +9,12 @@ const TeacherAttendance = () => {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ message: '', type: '' });
-
+  const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
   // Fetch students from the backend
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/students', {
+        const response = await fetch(`${apiBaseUrl}/api/students`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
         });
@@ -47,7 +47,7 @@ const TeacherAttendance = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/mark-attendance', {
+      const response = await fetch(`${apiBaseUrl}/api/mark-attendance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

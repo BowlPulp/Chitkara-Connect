@@ -4,12 +4,12 @@ import axios from 'axios';
 const AdminManageTeachers = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
   // Fetch the list of teachers when the component mounts
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/teachers');
+        const response = await axios.get(`${apiBaseUrl}/api/teachers`);
         setTeachers(response.data);
         setLoading(false);
       } catch (error) {

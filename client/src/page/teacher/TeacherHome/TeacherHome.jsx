@@ -9,13 +9,13 @@ const TeacherHome = () => {
   const [events, setEvents] = useState([]); // State to store events
   const [notices, setNotices] = useState([]); // State to store notices
   const [loading, setLoading] = useState(true); // Loading state to show loading spinner
-
+  const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
   // Function to fetch data for mentor notices, events, and notices
   const fetchData = async () => {
     try {
-      const mentorNoticeResponse = await axios.get("http://localhost:3000/api/get-mentor-notices");
-      const eventResponse = await axios.get("http://localhost:3000/api/get-events");
-      const noticeResponse = await axios.get("http://localhost:3000/api/get-notices");
+      const mentorNoticeResponse = await axios.get(`${apiBaseUrl}/api/get-mentor-notices`);
+      const eventResponse = await axios.get(`${apiBaseUrl}/api/get-events`);
+      const noticeResponse = await axios.get(`${apiBaseUrl}/api/get-notices`);
 
       setMentorNotices(mentorNoticeResponse.data); // Set mentor notices
       setEvents(eventResponse.data); // Set events

@@ -17,11 +17,11 @@ const SupportPage = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+  const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3000/api/support-add", formData);
+      const response = await axios.post(`http://${apiBaseUrl}/api/support-add`, formData);
       console.log("Response:", response.data);
       setSuccessMessage("Thank you for your feedback! We'll get back to you shortly.");
       setErrorMessage(""); // Clear any previous error messages
