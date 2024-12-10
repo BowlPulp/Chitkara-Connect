@@ -21,7 +21,7 @@ const SupportPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`http://${apiBaseUrl}/api/support-add`, formData);
+      const response = await axios.post(`${apiBaseUrl}/api/support-add`, formData);
       console.log("Response:", response.data);
       setSuccessMessage("Thank you for your feedback! We'll get back to you shortly.");
       setErrorMessage(""); // Clear any previous error messages
