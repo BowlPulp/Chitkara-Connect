@@ -17,11 +17,12 @@ const StudentQueries = () => {
   const [solvedQueries, setSolvedQueries] = useState([]); // State to hold solved queries
   const [yourQueries, setYourQueries] = useState([]);
   const [queryFilter, setQueryFilter] = useState("all");
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   // Fetch user data when component mounts
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
-      fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
+      fetch(`http://${apiBaseUrl}/api/post-data-from-token/${token}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -51,7 +52,7 @@ const StudentQueries = () => {
 
   // Fetch queries without solution
   useEffect(() => {
-    fetch("http://localhost:3000/api/queries-without-solution")
+    fetch("http://${apiBaseUrl}/api/queries-without-solution")
       .then((response) => response.json())
       .then((data) => {
         setQueries(data.queries); // Update state with fetched queries
@@ -63,7 +64,7 @@ const StudentQueries = () => {
 
   // Fetch solved queries
   useEffect(() => {
-    fetch("http://localhost:3000/api/queries-with-solution")
+    fetch("http://${apiBaseUrl}/api/queries-with-solution")
       .then((response) => response.json())
       .then((data) => {
         setSolvedQueries(data.queries); // Update state with fetched solved queries
@@ -77,7 +78,7 @@ const StudentQueries = () => {
   // Fetch queries specific to the logged-in user's roll number
 useEffect(() => {
   if (userData.rollNo) {
-    fetch(`http://localhost:3000/api/queries-by-rollno/${userData.rollNo}`)
+    fetch(`http://${apiBaseUrl}/api/queries-by-rollno/${userData.rollNo}`)
       .then((response) => response.json())
       .then((data) => {
         setYourQueries(data.queries); // Update state with fetched queries
@@ -115,7 +116,7 @@ useEffect(() => {
       solution: "null",
     };
 
-    fetch("http://localhost:3000/api/submit-query", {
+    fetch("http://${apiBaseUrl}/api/submit-query", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

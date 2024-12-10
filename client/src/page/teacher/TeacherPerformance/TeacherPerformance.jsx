@@ -5,11 +5,11 @@ const TeacherPerformance = () => {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchName, setSearchName] = useState('');
   const [loading, setLoading] = useState(true);
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   useEffect(() => {
     const fetchPerformance = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/students-performance');
+        const response = await fetch('http://${apiBaseUrl}/api/students-performance');
         const data = await response.json();
         setStudents(data);
         setFilteredStudents(data);

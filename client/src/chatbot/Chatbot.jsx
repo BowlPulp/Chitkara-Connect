@@ -8,11 +8,11 @@ const ChatBot = () => {
   const [showMore, setShowMore] = useState(false); // Toggle to show more questions
 
   const chatEndRef = useRef(null); // Reference to the bottom of the chat
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/questions');
+        const response = await axios.get('http://${apiBaseUrl}/questions');
         setOptions(response.data);
       } catch (error) {
         console.error('Error fetching questions:', error);

@@ -4,12 +4,12 @@ import axios from 'axios';
 const ContactTeachers = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   // Fetch teacher details from the backend
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/contact-teachers');
+        const response = await axios.get('http://${apiBaseUrl}/api/contact-teachers');
         setTeachers(response.data); // Set the fetched teacher data in state
         setLoading(false); // Set loading to false after data is fetched
       } catch (error) {

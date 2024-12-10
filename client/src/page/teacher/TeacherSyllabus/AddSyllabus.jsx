@@ -5,14 +5,14 @@ const AddSyllabus = () => {
   const [courseName, setCourseName] = useState('');
   const [topics, setTopics] = useState('');
   const [semester, setSemester] = useState('');
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   const handleSubmit = async (e) => {
     e.preventDefault();
     const topicList = topics.split(',').map(topic => topic.trim());
     const syllabusData = { courseName, topics: topicList, semester };
 
     try {
-      await axios.post('http://localhost:3000/api/syllabus-add', syllabusData);
+      await axios.post('http://${apiBaseUrl}/api/syllabus-add', syllabusData);
       alert('Syllabus added successfully!');
     } catch (error) {
       console.error('Error:', error.response?.data || error.message);

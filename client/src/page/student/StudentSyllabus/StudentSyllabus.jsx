@@ -4,12 +4,12 @@ import React, { useState, useEffect } from 'react';
 const StudentsSyllabus = () => {
   const [syllabus, setSyllabus] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   useEffect(() => {
     // Fetch syllabus data from the backend API
     const fetchSyllabus = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/syllabus');
+        const response = await fetch('http://${apiBaseUrl}/api/syllabus');
 
         if (response.ok) {
           const data = await response.json();

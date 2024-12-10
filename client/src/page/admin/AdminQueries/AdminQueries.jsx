@@ -4,12 +4,12 @@ import axios from 'axios';
 const AdminQueries = () => {
   const [queriesData, setQueriesData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   // Fetch the queries data when the component mounts
   useEffect(() => {
     const fetchQueriesData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/queries'); // Fetch queries from backend
+        const response = await axios.get('http://${apiBaseUrl}/api/queries'); // Fetch queries from backend
         setQueriesData(response.data);
         setLoading(false);
       } catch (error) {

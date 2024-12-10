@@ -4,12 +4,13 @@ import axios from 'axios';
 const AdminManageStudents = () => {
   const [studentsData, setStudentsData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+  
   // Fetch the students data when the component mounts
   useEffect(() => {
     const fetchStudentsData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/student'); // Fetch students from backend
+        const response = await axios.get('http://${apiBaseUrl}/api/student'); // Fetch students from backend
         setStudentsData(response.data);
         setLoading(false);
       } catch (error) {

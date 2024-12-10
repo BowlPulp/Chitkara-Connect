@@ -8,13 +8,13 @@ const StudentHome = () => {
   const [mentorNotices, setMentorNotices] = useState([]); // State for mentor notices
   const [notices, setNotices] = useState([]);  // State for notices
   const [loading, setLoading] = useState(true);  // Loading state to show loading spinner
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   // Function to fetch events, mentor notices, and notices data
   const fetchData = async () => {
     try {
-      const eventResponse = await axios.get("http://localhost:3000/api/get-events");
-      const mentorNoticeResponse = await axios.get("http://localhost:3000/api/get-mentor-notices");
-      const noticeResponse = await axios.get("http://localhost:3000/api/get-notices");
+      const eventResponse = await axios.get("http://${apiBaseUrl}/api/get-events");
+      const mentorNoticeResponse = await axios.get("http://${apiBaseUrl}/api/get-mentor-notices");
+      const noticeResponse = await axios.get("http://${apiBaseUrl}/api/get-notices");
 
       setEvents(eventResponse.data);  // Set the fetched events in state
       setMentorNotices(mentorNoticeResponse.data); // Set the fetched mentor notices in state

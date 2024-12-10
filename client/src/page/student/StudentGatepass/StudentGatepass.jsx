@@ -17,13 +17,13 @@ const StudentGatepass = () => {
   const [appliedGatepasses, setAppliedGatepasses] = useState([]);
   const [approvedGatepasses, setApprovedGatepasses] = useState([]);
   const [rejectedGatepasses, setRejectedGatepasses] = useState([]);
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
 
     if (token) {
       // First, fetch the user details from the token
-      fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
+      fetch(`http://${apiBaseUrl}/api/post-data-from-token/${token}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -39,7 +39,7 @@ const StudentGatepass = () => {
           const { RollNo } = data.decoded;
 
           // Fetch the student details using the RollNo
-          return fetch(`http://localhost:3000/api/student-details/${RollNo}`);
+          return fetch(`http://${apiBaseUrl}/api/student-details/${RollNo}`);
         })
         .then((response) => {
           if (!response.ok) {
@@ -65,7 +65,7 @@ const StudentGatepass = () => {
         })
         .then((RollNo) => {
           // Fetch pending gatepasses for the student
-          return fetch(`http://localhost:3000/api/gatepasses/pending/${RollNo}`);
+          return fetch(`http://${apiBaseUrl}/api/gatepasses/pending/${RollNo}`);
         })
         .then((response) => {
           if (!response.ok) {
@@ -82,7 +82,7 @@ const StudentGatepass = () => {
         });
 
       // Fetch approved gatepasses after fetching student data
-      fetch(`http://localhost:3000/api/gatepasses/approved/${studentData.rollNo}`)
+      fetch(`http://${apiBaseUrl}/api/gatepasses/approved/${studentData.rollNo}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Error fetching approved gatepasses");
@@ -98,7 +98,7 @@ const StudentGatepass = () => {
         });
 
       // Fetch rejected gatepasses after fetching student data
-      fetch(`http://localhost:3000/api/gatepasses/rejected/${studentData.rollNo}`)
+      fetch(`http://${apiBaseUrl}/api/gatepasses/rejected/${studentData.rollNo}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Error fetching rejected gatepasses");
@@ -129,7 +129,7 @@ const StudentGatepass = () => {
     setResponseMessage("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/submit-gatepass", {
+      const response = await fetch("http://${apiBaseUrl}/api/submit-gatepass", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

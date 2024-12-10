@@ -7,12 +7,12 @@ const StudentAttendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   // Fetch RollNo from token
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
-      fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
+      fetch(`http://${apiBaseUrl}/api/post-data-from-token/${token}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -39,7 +39,7 @@ const StudentAttendance = () => {
   // Fetch attendance data for the student
   useEffect(() => {
     if (student.RollNo) {
-      fetch(`http://localhost:3000/api/attendance/${student.RollNo}`)
+      fetch(`http://${apiBaseUrl}/api/attendance/${student.RollNo}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`Error: ${response.status} ${response.statusText}`);

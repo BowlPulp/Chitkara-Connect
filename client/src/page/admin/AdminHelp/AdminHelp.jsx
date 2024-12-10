@@ -4,12 +4,12 @@ import axios from 'axios';
 const AdminHelp = () => {
   const [supportData, setSupportData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   // Fetch the support collection data when the component mounts
   useEffect(() => {
     const fetchSupportData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/supports'); // Update API endpoint
+        const response = await axios.get('http://${apiBaseUrl}/api/supports'); // Update API endpoint
         setSupportData(response.data);
         setLoading(false);
       } catch (error) {

@@ -7,13 +7,13 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(""); // Reset error message before attempting login
   
     try {
-      const response = await fetch("http://localhost:3000/api/login", { // Ensure the port matches your server setup
+      const response = await fetch("http://${apiBaseUrl}/api/login", { // Ensure the port matches your server setup
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: rollNo, password }), // Sending rollNo as userId

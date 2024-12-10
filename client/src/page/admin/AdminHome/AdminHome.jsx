@@ -8,17 +8,17 @@ const AdminHome = () => {
   const [queriesCount, setQueriesCount] = useState(null);
   const [noticesCount, setNoticesCount] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   // Fetch counts when the component mounts
   useEffect(() => {
     const fetchCounts = async () => {
       try {
         const [studentRes, teacherRes, supportRes, queriesRes, noticesRes] = await Promise.all([
-          axios.get("http://localhost:3000/api/students/count"),
-          axios.get("http://localhost:3000/api/teachers/count"),
-          axios.get("http://localhost:3000/api/support/count"),
-          axios.get("http://localhost:3000/api/queries/count"),
-          axios.get("http://localhost:3000/api/notices/count")
+          axios.get("http://${apiBaseUrl}/api/students/count"),
+          axios.get("http://${apiBaseUrl}/api/teachers/count"),
+          axios.get("http://${apiBaseUrl}/api/support/count"),
+          axios.get("http://${apiBaseUrl}/api/queries/count"),
+          axios.get("http://${apiBaseUrl}/api/notices/count")
         ]);
 
         setStudentCount(studentRes.data.count);

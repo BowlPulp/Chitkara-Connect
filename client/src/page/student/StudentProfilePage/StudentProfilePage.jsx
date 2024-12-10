@@ -18,12 +18,12 @@ const StudentProfilePage = () => {
   });
 
   const navigate = useNavigate(); // Hook for redirection
-
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
       // Decode JWT token to get RollNo
-      fetch(`http://localhost:3000/api/post-data-from-token/${token}`, {
+      fetch(`http://${apiBaseUrl}/api/post-data-from-token/${token}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -39,7 +39,7 @@ const StudentProfilePage = () => {
           const { RollNo } = data.decoded; // Get RollNo from the decoded token
 
           // Now fetch the student details using the RollNo
-          fetch(`http://localhost:3000/api/student-details/${RollNo}`)
+          fetch(`http://${apiBaseUrl}/api/student-details/${RollNo}`)
             .then((response) => {
               if (!response.ok) {
                 throw new Error("Error fetching student details");
