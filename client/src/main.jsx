@@ -23,6 +23,8 @@ import StudentAttendance from './page/student/StudentAttendance/StudentAttendanc
 import TeacherAttendance from './page/teacher/TeacherAttendance/TeacherAttendance.jsx';
 import StudentProfilePage from './page/student/StudentProfilePage/StudentProfilePage.jsx';
 import TeacherPerformance from './page/teacher/TeacherPerformance/TeacherPerformance.jsx';
+import TeacherProfilePage from './page/teacher/TeacherProfilePage/TeacherProfilePage.jsx';
+import TeacherGatepass from './page/teacher/TeacherGatepass/TeacherGatepass.jsx';
 import AdminLayout from './AdminLayout.jsx';
 import AdminHome from './page/admin/AdminHome/AdminHome.jsx';
 import AdminStudents from './page/admin/AdminManageStudents.jsx/AdminManageStudents.jsx';
@@ -122,6 +124,15 @@ const router = createBrowserRouter([
         path: 'performance',
         element: <TeacherPerformance />
       },
+
+      {
+        path: 'profile',
+        element: <TeacherProfilePage/>
+      },
+      {
+        path: 'gatepass',
+        element: <TeacherGatepass/>
+      },
     ]
   },
   {
@@ -149,7 +160,7 @@ const router = createBrowserRouter([
         element: <AdminHelp/>
       },
     ]
-  }
+  },
 ]);
 
 createRoot(document.getElementById('root')).render(
