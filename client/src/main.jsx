@@ -22,6 +22,7 @@ import StudentPerformance from './page/student/StudentPerformance/StudentPerform
 import StudentAttendance from './page/student/StudentAttendance/StudentAttendance.jsx';
 import TeacherAttendance from './page/teacher/TeacherAttendance/TeacherAttendance.jsx';
 import StudentProfilePage from './page/student/StudentProfilePage/StudentProfilePage.jsx';
+import TeacherPerformance from './page/teacher/TeacherPerformance/TeacherPerformance.jsx';
 
 const router = createBrowserRouter([
   // Default Login Route
@@ -108,6 +109,10 @@ const router = createBrowserRouter([
       {
         path: 'attendance',
         element: <TeacherAttendance />
+      },
+      {
+        path: 'performance',
+        element: <TeacherPerformance />
       },
     ]
   }

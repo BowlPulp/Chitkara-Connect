@@ -867,6 +867,16 @@ app.get('/api/queries-by-rollno/:rollNo', async (req, res) => {
 
 
 
+app.get('/api/students-performance', async (req, res) => {
+  try {
+    // Fetch only `RollNo` and `name` fields from the database
+    const performance = await performanceCollection.find({}).toArray();
+    res.status(200).json(performance);
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    res.status(500).json({ error: 'Failed to fetch students' });
+  }
+});
 
 
 

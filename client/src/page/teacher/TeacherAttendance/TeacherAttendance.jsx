@@ -85,80 +85,82 @@ const TeacherAttendance = () => {
   const uniqueGroups = Array.from(new Set(students.map(student => student.group)));
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">Mark Attendance</h1>
+    <div className="bg-gray-900 min-h-screen text-gray-200 p-8">
+      <div className="max-w-4xl mx-auto p-6 bg-gray-800 rounded-lg shadow-lg">
+        <h1 className="text-2xl font-bold text-center mb-6 text-gray-200">Mark Attendance</h1>
 
-      {/* Group selection dropdown */}
-      <div className="mb-4">
-        <label htmlFor="group" className="text-lg font-medium text-gray-700">Select Group</label>
-        <select
-          id="group"
-          value={selectedGroup}
-          onChange={handleGroupChange}
-          className="mt-2 block w-full py-2 px-4 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All Groups</option>
-          {uniqueGroups.map((group, index) => (
-            <option key={index} value={group}>
-              {group}
-            </option>
-          ))}
-        </select>
-      </div>
+        {/* Group selection dropdown */}
+        <div className="mb-4">
+          <label htmlFor="group" className="text-lg font-medium text-gray-400">Select Group</label>
+          <select
+            id="group"
+            value={selectedGroup}
+            onChange={handleGroupChange}
+            className="mt-2 block w-full py-2 px-4 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Groups</option>
+            {uniqueGroups.map((group, index) => (
+              <option key={index} value={group}>
+                {group}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {/* Attendance Form for selected group */}
-      <div className="space-y-4">
-        {filteredStudents.length > 0 ? (
-          filteredStudents.map(student => (
-            <div
-              key={`${student.RollNo}-${student.group}`}  // Concatenate RollNo and group to form a unique key
-              className="flex items-center justify-between bg-white p-4 rounded-lg shadow-md mb-3"
-            >
-              <span className="text-lg font-medium text-gray-800">{student.name}</span>
-              <div className="space-x-2">
-                <button
-                  onClick={() => handleAttendanceChange(student.RollNo, 'Present')}
-                  className={`px-4 py-2 rounded-lg ${
-                    attendance[student.RollNo] === 'Present' ? 'bg-green-500 text-white' : 'bg-gray-200'
-                  } hover:bg-green-400 focus:outline-none`}
-                >
-                  Present
-                </button>
-                <button
-                  onClick={() => handleAttendanceChange(student.RollNo, 'Absent')}
-                  className={`px-4 py-2 rounded-lg ${
-                    attendance[student.RollNo] === 'Absent' ? 'bg-red-500 text-white' : 'bg-gray-200'
-                  } hover:bg-red-400 focus:outline-none`}
-                >
-                  Absent
-                </button>
+        {/* Attendance Form for selected group */}
+        <div className="space-y-4">
+          {filteredStudents.length > 0 ? (
+            filteredStudents.map(student => (
+              <div
+                key={`${student.RollNo}-${student.group}`}  // Concatenate RollNo and group to form a unique key
+                className="flex items-center justify-between bg-gray-700 p-4 rounded-lg shadow-md mb-3"
+              >
+                <span className="text-lg font-medium text-gray-200">{student.name}</span>
+                <div className="space-x-2">
+                  <button
+                    onClick={() => handleAttendanceChange(student.RollNo, 'Present')}
+                    className={`px-4 py-2 rounded-lg ${
+                      attendance[student.RollNo] === 'Present' ? 'bg-green-500 text-white' : 'bg-gray-500'
+                    } hover:bg-green-400 focus:outline-none`}
+                  >
+                    Present
+                  </button>
+                  <button
+                    onClick={() => handleAttendanceChange(student.RollNo, 'Absent')}
+                    className={`px-4 py-2 rounded-lg ${
+                      attendance[student.RollNo] === 'Absent' ? 'bg-red-500 text-white' : 'bg-gray-500'
+                    } hover:bg-red-400 focus:outline-none`}
+                  >
+                    Absent
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-500">No students in this group.</p>
+            ))
+          ) : (
+            <p className="text-center text-gray-500">No students in this group.</p>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <button
+          onClick={handleSubmit}
+          className={`w-full mt-6 py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 focus:outline-none ${
+            loading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={loading}
+        >
+          {loading ? 'Submitting...' : 'Submit Attendance'}
+        </button>
+
+        {/* Toast Notification */}
+        {toast.message && (
+          <div
+            className={`mt-4 p-4 rounded-lg text-white ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}
+          >
+            <p>{toast.message}</p>
+          </div>
         )}
       </div>
-
-      {/* Submit Button */}
-      <button
-        onClick={handleSubmit}
-        className={`block w-full mt-6 py-2 px-4 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 focus:outline-none ${
-          loading ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
-        disabled={loading}
-      >
-        {loading ? 'Submitting...' : 'Submit Attendance'}
-      </button>
-
-      {/* Toast Notification */}
-      {toast.message && (
-        <div
-          className={`mt-4 p-4 rounded-lg text-white ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}
-        >
-          <p>{toast.message}</p>
-        </div>
-      )}
     </div>
   );
 };
