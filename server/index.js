@@ -7,8 +7,6 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const ObjectId = require('mongodb').ObjectId;
 
-
-
 const app = express();
 const PORT = 3000;
 
