@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TeacherNoticeCreate from "./TeacherNoticeCreate";
-import ChatBot from "../../../chatbot/ChatBot";
+import ChatBot from "../../../chatbot/Chatbot";
 
 const TeacherHome = () => {
   const [activeTab, setActiveTab] = useState("mentorNotice");
