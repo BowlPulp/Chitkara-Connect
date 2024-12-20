@@ -50,7 +50,7 @@ async function run() {
 
 run().catch(console.dir);
 
-app.use(cors({ credentials: true, origin: 'http://localhost:5173' })); // Allow credentials for CORS
+app.use(cors({ credentials: true, origin: 'https://chitkara-connect.onrender.com' })); // Allow credentials for CORS
 app.use(bodyParser.json());
 app.use(cookieParser()); // Parse cookies
 
