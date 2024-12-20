@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom"; // Use useNavigate for redirection
 import Chitkaralogo from "/chitkaraLogo.jpeg"; // Adjust the path as needed
 import profile from "/profile.png";
-import ChatBot from "../../../chatbot/ChatBot"; // Adjust the path as needed
+import ChatBot from "../../../chatbot/Chatbot"; // Adjust the path as needed
 
 const StudentNavBar = () => {
   const navigate = useNavigate(); // Hook to handle redirection
