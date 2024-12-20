@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import ChatBot from "../../../chatbot/ChatBot";
 
 const StudentHome = () => {
   const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
